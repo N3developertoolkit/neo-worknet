@@ -37,12 +37,6 @@ namespace NeoShell.Node
     {
     }
 
-    // public async Task<IExpressNode.CheckpointMode> CreateCheckpointAsync(string checkPointPath)
-    // {
-    //     await rpcClient.RpcSendAsync("expresscreatecheckpoint", checkPointPath).ConfigureAwait(false);
-    //     return IExpressNode.CheckpointMode.Online;
-    // }
-
     public Task<RpcInvokeResult> InvokeAsync(Script script, Signer? signer = null)
     {
       return signer is null
@@ -50,19 +44,6 @@ namespace NeoShell.Node
           : rpcClient.InvokeScriptAsync(script, signer);
     }
 
-    // public async Task FastForwardAsync(uint blockCount, TimeSpan timestampDelta)
-    // {
-    //     var prevHash = await rpcClient.GetBestBlockHashAsync().ConfigureAwait(false);
-    //     var prevHeaderHex = await rpcClient.GetBlockHeaderHexAsync($"{prevHash}").ConfigureAwait(false);
-    //     var prevHeader = Convert.FromBase64String(prevHeaderHex).AsSerializable<Header>();
-
-    //     await NodeUtility.FastForwardAsync(prevHeader,
-    //         blockCount,
-    //         timestampDelta,
-    //         consensusNodesKeys.Value,
-    //         ProtocolSettings.Network,
-    //         block => rpcClient.SubmitBlockAsync(block.ToArray()));
-    // }
 
     public async Task<UInt256> ExecuteAsync(Wallet wallet, UInt160 accountHash, WitnessScope witnessScope, Script script, decimal additionalGas = 0)
     {
@@ -128,6 +109,33 @@ namespace NeoShell.Node
       }
 
       return Array.Empty<TokenContract>();
+    }
+
+    public async Task<Block> GetLatestBlockAsync()
+    {
+      var hash = await rpcClient.GetBestBlockHashAsync().ConfigureAwait(false);
+      var rpcBlock = await rpcClient.GetBlockAsync(hash).ConfigureAwait(false);
+      return rpcBlock.Block;
+    }
+
+    public async Task<Block> GetBlockAsync(UInt256 blockHash)
+    {
+      var rpcBlock = await rpcClient.GetBlockAsync(blockHash.ToString()).ConfigureAwait(false);
+      return rpcBlock.Block;
+    }
+
+    public async Task<Block> GetBlockAsync(uint blockIndex)
+    {
+      var rpcBlock = await rpcClient.GetBlockAsync(blockIndex.ToString()).ConfigureAwait(false);
+      return rpcBlock.Block;
+    }
+
+    public async Task<(Transaction tx, Neo.Network.RPC.Models.RpcApplicationLog? appLog)> GetTransactionAsync(UInt256 txHash)
+    {
+      var hash = txHash.ToString();
+      var response = await rpcClient.GetRawTransactionAsync(hash).ConfigureAwait(false);
+      var log = await rpcClient.GetApplicationLogAsync(hash).ConfigureAwait(false);
+      return (response.Transaction, log);
     }
   }
 }

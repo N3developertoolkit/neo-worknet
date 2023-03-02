@@ -73,7 +73,11 @@ namespace NeoShell.Commands
           }
           else
           {
-            var password = chainManager.Chain.ResolvePassword(Account, Password);
+            var password = Password;
+            if (!Account.IsWIFString())
+            {
+              password = chainManager.Chain.ResolvePassword(Account, Password);
+            }
             await txExec.ContractInvokeAsync(script, Account, password, WitnessScope, AdditionalGas);
           }
 

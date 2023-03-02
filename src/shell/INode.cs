@@ -22,5 +22,13 @@ namespace NeoShell
 
     Task<IReadOnlyList<TokenContract>> ListTokenContractsAsync();
 
+    Task<Block> GetLatestBlockAsync();
+
+    Task<Block> GetBlockAsync(UInt256 blockHash);
+
+    Task<Block> GetBlockAsync(uint blockIndex);
+
+    Task<(Transaction tx, RpcApplicationLog? appLog)> GetTransactionAsync(UInt256 txHash);
+
   }
 }

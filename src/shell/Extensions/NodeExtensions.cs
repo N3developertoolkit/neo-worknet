@@ -208,6 +208,26 @@ namespace NeoShell
       throw new Exception("invalid script results");
     }
 
+    public static async Task<Block> GetBlockAsync(this INode expressNode, string blockHash)
+    {
+      if (string.IsNullOrEmpty(blockHash))
+      {
+        return await expressNode.GetLatestBlockAsync().ConfigureAwait(false);
+      }
+
+      if (UInt256.TryParse(blockHash, out var uint256))
+      {
+        return await expressNode.GetBlockAsync(uint256).ConfigureAwait(false);
+      }
+
+      if (uint.TryParse(blockHash, out var index))
+      {
+        return await expressNode.GetBlockAsync(index).ConfigureAwait(false);
+      }
+
+      throw new ArgumentException($"{nameof(blockHash)} must be block index, block hash or empty", nameof(blockHash));
+    }
+
     internal static async Task<PolicyValues> GetPolicyAsync(Func<Script, Task<RpcInvokeResult>> invokeAsync)
     {
       using var builder = new ScriptBuilder();
