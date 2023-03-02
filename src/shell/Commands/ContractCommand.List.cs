@@ -1,0 +1,71 @@
+using McMaster.Extensions.CommandLineUtils;
+
+namespace NeoShell.Commands
+{
+    partial class ContractCommand
+    {
+        [Command(Name = "list", Description = "List deployed contracts")]
+        internal class List
+        {
+            readonly ExpressChainManagerFactory chainManagerFactory;
+
+            public List(ExpressChainManagerFactory chainManagerFactory)
+            {
+                this.chainManagerFactory = chainManagerFactory;
+            }
+
+            [Option(Description = "Path to the data file")]
+            internal string Input { get; init; } = string.Empty;
+
+            [Option(Description = "Output as JSON")]
+            internal bool Json { get; init; } = false;
+
+            internal async Task ExecuteAsync(System.IO.TextWriter writer)
+            {
+                var (chainManager, _) = chainManagerFactory.LoadChain(chainManagerFactory.GetConnectionFilePath(Input));
+                using var expressNode = chainManager.GetNode();
+
+                var contracts = await expressNode.ListContractsAsync().ConfigureAwait(false);
+
+                if (Json)
+                {
+                    using var jsonWriter = new Newtonsoft.Json.JsonTextWriter(writer);
+                    await jsonWriter.WriteStartArrayAsync().ConfigureAwait(false);
+                    foreach (var (hash, manifest) in contracts)
+                    {
+
+                        await jsonWriter.WriteStartObjectAsync().ConfigureAwait(false);
+                        await jsonWriter.WritePropertyNameAsync("name").ConfigureAwait(false);
+                        await jsonWriter.WriteValueAsync(manifest.Name).ConfigureAwait(false);
+                        await jsonWriter.WritePropertyNameAsync("hash").ConfigureAwait(false);
+                        await jsonWriter.WriteValueAsync(hash.ToString()).ConfigureAwait(false);
+                        await jsonWriter.WriteEndObjectAsync().ConfigureAwait(false);
+                    }
+                    await jsonWriter.WriteEndArrayAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    foreach (var (hash, manifest) in contracts)
+                    {
+                        await writer.WriteLineAsync($"{manifest.Name} ({hash})").ConfigureAwait(false);
+                    }
+                }
+            }
+
+            internal async Task<int> OnExecuteAsync(CommandLineApplication app, IConsole console)
+            {
+                try
+                {
+                    await ExecuteAsync(Console.Out).ConfigureAwait(false);
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    app.WriteException(ex);
+                    return 1;
+                }
+            }
+
+        }
+    }
+}

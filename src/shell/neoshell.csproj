@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>neo-shell</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>NeoShell</RootNamespace>
+    <PackAsTool>true</PackAsTool>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Abstractions" Version="19.1.14"/>
+    <PackageReference Include="OneOf" Version="3.0.223"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
+    <PackageReference Include="Neo" Version="3.5.0"/>
+    <PackageReference Include="Nito.Disposables" Version="2.3.0"/>
+  </ItemGroup>
+</Project>
