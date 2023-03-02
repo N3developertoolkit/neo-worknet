@@ -97,15 +97,13 @@ namespace NeoShell
     }
 
     public static async Task<UInt256> UpdateAsync(this INode expressNode,
+                                                          UInt160 contractHash,
                                                           NefFile nefFile,
                                                           ContractManifest manifest,
                                                           Wallet wallet,
                                                           UInt160 accountHash,
-                                                          WitnessScope witnessScope,
-                                                          ContractParameter? data)
+                                                          WitnessScope witnessScope)
     {
-      data ??= new ContractParameter(ContractParameterType.Any);
-
       // check for bad opcodes (logic borrowed from neo-cli LoadDeploymentScript)
       Neo.VM.Script script = nefFile.Script;
       for (var i = 0; i < script.Length;)
@@ -126,11 +124,10 @@ namespace NeoShell
       }
 
       using var sb = new ScriptBuilder();
-      sb.EmitDynamicCall(NativeContract.ContractManagement.Hash,
+      sb.EmitDynamicCall(contractHash,
           "update",
           nefFile.ToArray(),
-          manifest.ToJson().ToString(),
-          data);
+          manifest.ToJson().ToString());
       return await expressNode.ExecuteAsync(wallet, accountHash, witnessScope, sb.ToArray()).ConfigureAwait(false);
     }
 

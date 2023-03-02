@@ -18,6 +18,8 @@ namespace NeoShell
 
     Task<UInt256> ExecuteAsync(Wallet wallet, UInt160 accountHash, WitnessScope witnessScope, Script script, decimal additionalGas = 0);
 
+    Task<ContractManifest> GetContractAsync(UInt160 scriptHash);
+    
     Task<IReadOnlyList<(UInt160 hash, ContractManifest manifest)>> ListContractsAsync();
 
     Task<IReadOnlyList<TokenContract>> ListTokenContractsAsync();

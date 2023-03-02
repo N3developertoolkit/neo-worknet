@@ -137,5 +137,11 @@ namespace NeoShell.Node
       var log = await rpcClient.GetApplicationLogAsync(hash).ConfigureAwait(false);
       return (response.Transaction, log);
     }
+
+    public async Task<ContractManifest> GetContractAsync(UInt160 scriptHash)
+    {
+      var contractState = await rpcClient.GetContractStateAsync(scriptHash.ToString()).ConfigureAwait(false);
+      return contractState.Manifest;
+    }
   }
 }

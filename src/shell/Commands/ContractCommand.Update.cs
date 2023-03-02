@@ -19,11 +19,15 @@ namespace NeoShell.Commands
         this.txExecutorFactory = txExecutorFactory;
       }
 
-      [Argument(0, Description = "Path to contract .nef file")]
+      [Argument(0, Description = "Contract name or invocation hash")]
       [Required]
       internal string Contract { get; init; } = string.Empty;
 
-      [Argument(1, Description = "Account to pay contract deployment GAS fee. Can be a name or a WIF string")]
+      [Argument(1, Description = "Path to contract .nef file")]
+      [Required]
+      internal string NefFile { get; init; } = string.Empty;
+
+      [Argument(2, Description = "Account to pay contract deployment GAS fee. Can be a name or a WIF string")]
       [Required]
       internal string Account { get; init; } = string.Empty;
 
@@ -65,7 +69,7 @@ namespace NeoShell.Commands
             password = chainManager.Chain.ResolvePassword(Account, Password);
           }
           using var txExec = txExecutorFactory.Create(chainManager, Trace, Json);
-          await txExec.ContractUpdateAsync(Contract, Account, password, WitnessScope, Data, Force).ConfigureAwait(false);
+          await txExec.ContractUpdateAsync(Contract, NefFile, Account, password, WitnessScope, Data, Force).ConfigureAwait(false);
           return 0;
         }
         catch (Exception ex)
