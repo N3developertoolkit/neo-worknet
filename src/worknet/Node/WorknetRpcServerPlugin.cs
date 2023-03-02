@@ -5,7 +5,7 @@ using Neo.Network.RPC;
 using Neo.Plugins;
 using Neo.SmartContract.Native;
 
-namespace NeoWorkNet.Commands;
+namespace NeoWorkNet.Node;
 
 class WorknetRpcServerPlugin : Plugin
 {

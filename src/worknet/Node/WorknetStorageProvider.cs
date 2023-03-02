@@ -1,6 +1,6 @@
 using Neo.Persistence;
 
-namespace NeoWorkNet.Commands;
+namespace NeoWorkNet.Node;
 
 class WorknetStorageProvider : IStoreProvider
 {

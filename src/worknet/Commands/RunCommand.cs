@@ -10,6 +10,7 @@ using Neo.Persistence;
 using Neo.Plugins;
 using Neo.Wallets;
 using NeoWorkNet.Models;
+using NeoWorkNet.Node;
 
 namespace NeoWorkNet.Commands;
 

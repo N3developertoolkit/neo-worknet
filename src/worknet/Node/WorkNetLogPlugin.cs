@@ -10,7 +10,7 @@ using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using static Crayon.Output;
 
-namespace NeoWorkNet.Commands;
+namespace NeoWorkNet.Node;
 
 class WorkNetLogPlugin : Plugin
 {
