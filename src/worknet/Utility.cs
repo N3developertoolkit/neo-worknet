@@ -1,13 +1,10 @@
 using McMaster.Extensions.CommandLineUtils;
 using Neo.BlockchainToolkit;
 using Neo.BlockchainToolkit.Models;
-using NeoWorkNet.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.IO.Abstractions;
 using static Neo.BlockchainToolkit.Constants;
 using static Crayon.Output;
-using Neo.Wallets;
 
 namespace NeoWorkNet;
 
@@ -18,12 +15,12 @@ static class Utility
         app.Error.WriteLine(Bright.Red($"{exception.GetType()}: {exception.Message}"));
     }
 
-    public static async Task<(string fileName, WorknetFile file)> LoadWorknetAsync(this IFileSystem fs, CommandLineApplication app)
+    public static async Task<(WorknetChain chain, string fileName)> LoadWorknetAsync(this IFileSystem fs, CommandLineApplication app)
     {
         var option = app.GetOptions().Single(o => o.LongName == "input");
         var fileName = fs.ResolveWorkNetFileName(option.Value() ?? string.Empty);
-        var worknetFile = await fs.LoadWorknetAsync(fileName).ConfigureAwait(false);
-        return (fileName, worknetFile);
+        var chain = await fs.LoadWorknetAsync(fileName).ConfigureAwait(false);
+        return (chain, fileName);
     }
 
     public static string ResolveWorkNetFileName(this IFileSystem fs, string path)
@@ -35,53 +32,19 @@ static class Utility
         return fs.Path.Combine(dirname, "data");
     }
 
-    public static async Task<WorknetFile> LoadWorknetAsync(this IFileSystem fs, string filename)
+    public static async Task<WorknetChain> LoadWorknetAsync(this IFileSystem fs, string filename)
     {
         using var stream = fs.File.OpenRead(filename);
-        using var textReader = new StreamReader(stream);
-        using var reader = new JsonTextReader(textReader);
-        var json = await JObject.LoadAsync(reader).ConfigureAwait(false);
-        var uri = json.Value<string>("uri") ?? throw new JsonException("uri");
-        var branchInfo = BranchInfo.Load(json["branch-info"] as JObject ?? throw new JsonException("branch-info"));
-        var wallet = ToolkitWallet.Load(json["consensus-wallet"] as JObject ?? throw new JsonException("consensus-wallet"), branchInfo.ProtocolSettings);
-        return new WorknetFile(new Uri(uri), branchInfo, wallet);
+        return await WorknetChain.ParseAsync(stream).ConfigureAwait(false);
     }
 
-    public static void SaveWorknetFile(this IFileSystem fs, string filename, Uri uri, BranchInfo branch, ToolkitWallet wallet)
+    public static void SaveWorknet(this IFileSystem fs, string filename, WorknetChain chain)
     {
         using var stream = fs.File.Open(filename, FileMode.Create, FileAccess.Write);
         using var textWriter = new StreamWriter(stream);
         using var writer = new JsonTextWriter(textWriter);
         writer.Formatting = Formatting.Indented;
-
-        using var _ = writer.WriteObject();
-        writer.WriteProperty("magic", branch.Network);
-        writer.WriteProperty("address-version", branch.AddressVersion);
-        {
-            using var _1 = writer.WritePropertyArray("consensus-nodes");
-            using var _2 = writer.WriteObject();
-            writer.WriteProperty("rpc-port", 30332);
-            using var _3 = writer.WritePropertyObject("wallet");
-            writer.WriteProperty("name", "node1");
-            using var _4 = writer.WritePropertyArray("accounts");
-            foreach (var account in wallet.GetAccounts())
-            {
-                using var _5 = writer.WriteObject();
-                var key = account.GetKey();
-                if (key is not null) 
-                {
-                    writer.WriteProperty("private-key", Convert.ToHexString(key.PrivateKey).ToLower());
-                }
-                writer.WriteProperty("address", account.ScriptHash.ToAddress(branch.AddressVersion));
-                writer.WriteProperty("is-default", account.IsDefault);
-            }
-        }
-
-        writer.WriteProperty("uri", uri.ToString());
-        writer.WritePropertyName("branch-info");
-        branch.WriteJson(writer);
-        writer.WritePropertyName("consensus-wallet");
-        wallet.WriteJson(writer);
+        chain.WriteJson(writer);
     }
 
     public static CancellationToken OverrideCancelKeyPress(this IConsole console, CancellationToken token, bool continueRunning = false)

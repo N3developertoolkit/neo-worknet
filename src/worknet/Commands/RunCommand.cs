@@ -9,8 +9,8 @@ using Neo.Cryptography.ECC;
 using Neo.Persistence;
 using Neo.Plugins;
 using Neo.Wallets;
-using NeoWorkNet.Models;
 using NeoWorkNet.Node;
+using Neo.BlockchainToolkit.Models;
 
 namespace NeoWorkNet.Commands;
 
@@ -31,12 +31,12 @@ partial class RunCommand
     {
         try
         {
-            var (filename, worknet) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
+            var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
             var dataDir = fs.GetWorknetDataDirectory(filename);
             if (!fs.Directory.Exists(dataDir)) throw new Exception($"Cannot locate data directory {dataDir}");
 
             var secondsPerBlock = SecondsPerBlock ?? 0;
-            await RunAsync(worknet, dataDir, secondsPerBlock, console, token).ConfigureAwait(false);
+            await RunAsync(chain, dataDir, secondsPerBlock, console, token).ConfigureAwait(false);
             return 0;
         }
         catch (Exception ex)
@@ -46,7 +46,7 @@ partial class RunCommand
         }
     }
 
-    static ProtocolSettings GetProtocolSettings(WorknetFile worknetFile, uint secondsPerBlock = 0)
+    static ProtocolSettings GetProtocolSettings(WorknetChain worknetFile, uint secondsPerBlock = 0)
     {
         var account = worknetFile.ConsensusWallet.GetAccounts().Single();
         var key = account.GetKey() ?? throw new Exception();
@@ -61,7 +61,7 @@ partial class RunCommand
         };
     }
 
-    static async Task RunAsync(WorknetFile worknet, string dataDir, uint secondsPerBlock, IConsole console, CancellationToken token)
+    static async Task RunAsync(WorknetChain worknet, string dataDir, uint secondsPerBlock, IConsole console, CancellationToken token)
     {
         var tcs = new TaskCompletionSource<bool>();
         _ = Task.Run(() =>
@@ -85,8 +85,8 @@ partial class RunCommand
 
                 neoSystem.StartNode(new Neo.Network.P2P.ChannelsConfig
                 {
-                    Tcp = new IPEndPoint(IPAddress.Loopback, 30333),
-                    WebSocket = new IPEndPoint(IPAddress.Loopback, 30334),
+                    Tcp = new IPEndPoint(IPAddress.Loopback, worknet.ConsensusNode.TcpPort),
+                    WebSocket = new IPEndPoint(IPAddress.Loopback, worknet.ConsensusNode.WebSocketPort),
                 });
                 dbftPlugin.Start(worknet.ConsensusWallet);
 
@@ -108,7 +108,7 @@ partial class RunCommand
         }, CancellationToken.None);
         await tcs.Task.ConfigureAwait(false);
 
-        static Neo.Consensus.Settings GetConsensusSettings(WorknetFile worknet)
+        static Neo.Consensus.Settings GetConsensusSettings(WorknetChain worknet)
         {
             var settings = new Dictionary<string, string>()
             {
@@ -121,7 +121,7 @@ partial class RunCommand
             return new Neo.Consensus.Settings(config.GetSection("PluginConfiguration"));
         }
 
-        static RpcServerSettings GetRpcServerSettings(WorknetFile worknet)
+        static RpcServerSettings GetRpcServerSettings(WorknetChain worknet)
         {
             // var ipAddress = IPAddress.TryParse("0.0.0.0", out var _address) ? _address : IPAddress.Loopback;
             // chain.TryReadSetting<IPAddress>("rpc.BindAddress", IPAddress.TryParse, out var bindAddress)
@@ -130,8 +130,8 @@ partial class RunCommand
             var settings = new Dictionary<string, string>()
                 {
                     { "PluginConfiguration:Network", $"{worknet.BranchInfo.Network}" },
-                    { "PluginConfiguration:BindAddress", $"{IPAddress.Any}" },
-                    { "PluginConfiguration:Port", $"{30332}" },
+                    { "PluginConfiguration:BindAddress", $"{IPAddress.Loopback}" },
+                    { "PluginConfiguration:Port", $"{worknet.ConsensusNode.RpcPort}" },
                     { "PluginConfiguration:SessionEnabled", $"{true}"}
                 };
 

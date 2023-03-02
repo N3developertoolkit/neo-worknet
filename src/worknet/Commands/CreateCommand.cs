@@ -16,6 +16,7 @@ using Neo.Wallets;
 using Newtonsoft.Json;
 using static Neo.BlockchainToolkit.Constants;
 using static Neo.BlockchainToolkit.Utility;
+using static Crayon.Output;
 
 using NeoArray = Neo.VM.Types.Array;
 using NeoStruct = Neo.VM.Types.Struct;
@@ -82,11 +83,16 @@ class CreateCommand
 
             console.WriteLine($"Initializing local worknet");
 
-            var consensusWallet = new ToolkitWallet("consensus", branchInfo.ProtocolSettings);
+            var consensusWallet = new ToolkitWallet("node1", branchInfo.ProtocolSettings);
             var consensusAccount = consensusWallet.CreateAccount();
             consensusAccount.IsDefault = true;
 
-            fs.SaveWorknetFile(filename, uri, branchInfo, consensusWallet);
+            var tcpPort = GetPortNumber(7, 3);
+            var webSocketPort = GetPortNumber(7, 4);
+            var rpcPort = GetPortNumber(7, 2);
+            var consensusNode = new ToolkitConsensusNode(consensusWallet, tcpPort, webSocketPort, rpcPort);
+            var chain = new WorknetChain(uri, branchInfo, consensusNode);
+            fs.SaveWorknet(filename, chain);
 
             if (fs.Directory.Exists(dataDir))
             {
@@ -102,9 +108,11 @@ class CreateCommand
             InitializeStore(trackStore, consensusAccount);
 
             console.WriteLine($"Created {filename}");
-            console.WriteLine("    Note: The private keys for the accounts in this file are are *not* encrypted.");
-            console.WriteLine("          Do not use these accounts on MainNet or in any other system where security is a concern.");
+            console.WriteLine(Yellow("Note: The consensus node private keys for this chain are *not* encrypted."));
+            console.WriteLine(Yellow("      Do not use this wallet on MainNet or in any other system where security is a concern."));
             return 0;
+
+            static ushort GetPortNumber(int index, ushort portNumber) => (ushort)(50000 + ((index + 1) * 10) + portNumber);
         }
         catch (Exception ex)
         {

@@ -23,16 +23,16 @@ class ResetCommand
         {
             if (!Force) throw new InvalidOperationException("--force must be specified when resetting worknet");
 
-            var (filename, worknet) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
+            var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
             var dataDir = fs.GetWorknetDataDirectory(filename);
             if (!fs.Directory.Exists(dataDir)) throw new Exception($"Cannot locate data directory {dataDir}");
 
             using var db = RocksDbUtility.OpenDb(dataDir);
-            using var stateStore = new StateServiceStore(worknet.Uri, worknet.BranchInfo, db, true);
+            using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
             using var trackStore = new PersistentTrackingStore(db, stateStore, true);
 
             trackStore.Reset();
-            CreateCommand.InitializeStore(trackStore, worknet.ConsensusWallet.GetAccounts().Single());
+            CreateCommand.InitializeStore(trackStore, chain.ConsensusWallet.GetAccounts().Single());
             console.WriteLine("WorkNet node reset");
             return 0;
         }

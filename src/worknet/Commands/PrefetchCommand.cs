@@ -36,26 +36,26 @@ class PrefetchCommand
                 DiagnosticListener.AllListeners.Subscribe(diagnosticObserver);
             }
 
-            var (filename, worknet) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
+            var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
             var dataDir = fs.GetWorknetDataDirectory(filename);
             if (!fs.Directory.Exists(dataDir)) throw new Exception($"Cannot locate data directory {dataDir}");
 
-            var contracts = worknet.BranchInfo.Contracts;
+            var contracts = chain.BranchInfo.Contracts;
             if (!UInt160.TryParse(Contract, out var contractHash))
             {
                 var info = contracts.SingleOrDefault(c => c.Name.Equals(Contract, StringComparison.OrdinalIgnoreCase));
-                contractHash = info.Hash ?? UInt160.Zero;
+                contractHash = info?.Hash ?? UInt160.Zero;
             }
 
             if (contractHash == UInt160.Zero) throw new Exception("Invalid Contract argument");
 
-            var contractName = contracts.SingleOrDefault(c => c.Hash == contractHash).Name;
+            var contractName = contracts.SingleOrDefault(c => c.Hash == contractHash)?.Name;
             if (string.IsNullOrEmpty(contractName)) throw new Exception("Invalid Contract argument");
 
             console.WriteLine($"Prefetching {contractName} ({contractHash}) records");
 
             using var db = RocksDbUtility.OpenDb(dataDir);
-            using var stateStore = new StateServiceStore(worknet.Uri, worknet.BranchInfo, db);
+            using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db);
             var result = await stateStore.PrefetchAsync(contractHash, token).ConfigureAwait(false);
             if (result.TryPickT1(out Error<string> error, out _))
             {
