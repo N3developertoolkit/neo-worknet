@@ -11,17 +11,21 @@
 
   <ItemGroup>
     <PackageReference Include="Crayon" Version="2.0.69" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <Choose>
     <When Condition=" '$(BlockchainToolkitLibraryVersion)' == 'local'">
       <ItemGroup>
+        <ProjectReference Include="$(BlockchainToolkitLibraryLocalPath)\src\bctklib\bctklib.csproj" />
         <ProjectReference Include="$(NeoMonorepoPath)\modules\src\DBFTPlugin\DBFTPlugin.csproj" />
         <ProjectReference Include="$(NeoMonorepoPath)\modules\src\RpcServer\RpcServer.csproj" />
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
+        <PackageReference Include="Neo.BlockchainToolkit.Library" Version="$(BlockchainToolkitLibraryVersion)" />
         <PackageReference Include="Neo.Consensus.DBFT" Version="$(NeoVersion)" />
         <PackageReference Include="Neo.Plugins.RpcServer" Version="$(NeoVersion)" />
       </ItemGroup>
