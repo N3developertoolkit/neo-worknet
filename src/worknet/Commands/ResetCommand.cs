@@ -1,6 +1,6 @@
 using System.IO.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
-using Neo.BlockchainToolkit.Persistence;
+using NeoWorkNet.Node;
 
 namespace NeoWorkNet.Commands;
 
@@ -24,15 +24,9 @@ class ResetCommand
             if (!Force) throw new InvalidOperationException("--force must be specified when resetting worknet");
 
             var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
-            var dataDir = fs.GetWorknetDataDirectory(filename);
-            if (!fs.Directory.Exists(dataDir)) throw new Exception($"Cannot locate data directory {dataDir}");
+            var node = new WorkNetNode(chain, filename);
+            node.ResetStore();
 
-            using var db = RocksDbUtility.OpenDb(dataDir);
-            using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
-            using var trackStore = new PersistentTrackingStore(db, stateStore, true);
-
-            trackStore.Reset();
-            CreateCommand.InitializeStore(trackStore, chain.ConsensusWallet.GetAccounts().Single());
             console.WriteLine("WorkNet node reset");
             return 0;
         }
