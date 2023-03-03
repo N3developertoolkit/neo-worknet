@@ -6,6 +6,8 @@ using Neo.Network.P2P.Payloads;
 using Neo.SmartContract;
 using Neo.VM;
 using Newtonsoft.Json;
+using OneOf;
+using OneOf.Types;
 
 namespace NeoShell
 {
@@ -214,6 +216,46 @@ namespace NeoShell
                       .UpdateAsync(scriptHash, nefFile, manifest, wallet, accountHash, witnessScope)
                       .ConfigureAwait(false);
       await writer.WriteTxHashAsync(txHash, "Update", json).ConfigureAwait(false);
+    }
+
+    public async Task TransferAsync(string quantity, string asset, string sender, string password, string receiver, string data)
+    {
+      if (!chainManager.TryGetSigningAccount(sender, password, out var senderWallet, out var senderAccountHash))
+      {
+        throw new Exception($"{sender} sender not found.");
+      }
+
+      var getHashResult = await expressNode.TryGetAccountHashAsync(chainManager.Chain, receiver).ConfigureAwait(false);
+      if (getHashResult.TryPickT1(out _, out var receiverHash))
+      {
+        throw new Exception($"{receiver} account not found.");
+      }
+
+      ContractParameter? dataParam = null;
+      if (!string.IsNullOrEmpty(data))
+      {
+        var parser = await expressNode.GetContractParameterParserAsync(chainManager.Chain).ConfigureAwait(false);
+        dataParam = parser.ParseParameter(data);
+      }
+
+      var assetHash = await expressNode.ParseAssetAsync(asset).ConfigureAwait(false);
+      var txHash = await expressNode.TransferAsync(assetHash, ParseQuantity(quantity), senderWallet, senderAccountHash, receiverHash, dataParam);
+      await writer.WriteTxHashAsync(txHash, "Transfer", json).ConfigureAwait(false);
+
+      static OneOf<decimal, All> ParseQuantity(string quantity)
+      {
+        if ("all".Equals(quantity, StringComparison.OrdinalIgnoreCase))
+        {
+          return new All();
+        }
+
+        if (decimal.TryParse(quantity, out var amount))
+        {
+          return amount;
+        }
+
+        throw new Exception($"Invalid quantity value {quantity}");
+      }
     }
 
     static async Task WriteStackItemAsync(System.IO.TextWriter writer, Neo.VM.Types.StackItem item, int indent = 1, string prefix = "")

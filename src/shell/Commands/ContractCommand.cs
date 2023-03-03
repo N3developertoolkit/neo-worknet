@@ -3,7 +3,6 @@ using McMaster.Extensions.CommandLineUtils;
 namespace NeoShell.Commands
 {
     [Command("contract", Description = "Commands to manage smart contracts")]
-    [Subcommand(typeof(Invoke))]
     [Subcommand(typeof(Run))]
     [Subcommand(typeof(List))]
     [Subcommand(typeof(Deploy))]

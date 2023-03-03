@@ -7,6 +7,14 @@ With NEO Shell, users can perform various tasks such as transferring funds, depl
 ## Usage
 `neo COMMAND|EXTENSION [sub-commands] [—Global flags]`
 
+## Commands
+```
+connect       Connect to a network for example worknet or testnet
+contract      Commands to manage smart contracts
+show          Show information
+transfer      Transfer asset between accounts
+```
+
 ## Requirements
 
 [version 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) 

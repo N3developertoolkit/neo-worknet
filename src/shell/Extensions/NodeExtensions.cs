@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Text;
 using Neo;
 using Neo.BlockchainToolkit;
@@ -6,6 +7,7 @@ using Neo.BlockchainToolkit.Models;
 using Neo.IO;
 using Neo.Network.P2P.Payloads;
 using Neo.Network.RPC.Models;
+using Neo.Network.RPC;
 using Neo.SmartContract;
 using Neo.SmartContract.Manifest;
 using Neo.SmartContract.Native;
@@ -13,6 +15,7 @@ using Neo.VM;
 using Neo.Wallets;
 using NeoShell.Models;
 using OneOf;
+using All = OneOf.Types.All;
 using None = OneOf.Types.None;
 
 namespace NeoShell
@@ -178,6 +181,48 @@ namespace NeoShell
       }
 
       throw new ArgumentException($"Unknown Asset \"{asset}\"", nameof(asset));
+    }
+
+    public static async Task<UInt256> TransferAsync(this INode expressNode, UInt160 asset, OneOf<decimal, All> quantity, Wallet sender, UInt160 senderHash, UInt160 receiverHash, ContractParameter? data)
+    {
+      data ??= new ContractParameter(ContractParameterType.Any);
+
+      if (quantity.IsT0)
+      {
+        var results = await expressNode.InvokeAsync(asset.MakeScript("decimals")).ConfigureAwait(false);
+        if (results.Stack.Length > 0 && results.Stack[0].Type == Neo.VM.Types.StackItemType.Integer)
+        {
+          var decimals = (byte)(results.Stack[0].GetInteger());
+          var value = quantity.AsT0.ToBigInteger(decimals);
+          var script = asset.MakeScript("transfer", senderHash, receiverHash, value, data);
+          return await expressNode.ExecuteAsync(sender, senderHash, WitnessScope.CalledByEntry, script).ConfigureAwait(false);
+        }
+        else
+        {
+          throw new Exception("Invalid response from decimals operation");
+        }
+      }
+      else
+      {
+        Debug.Assert(quantity.IsT1);
+
+        using var sb = new ScriptBuilder();
+        // balanceOf operation places current balance on eval stack
+        sb.EmitDynamicCall(asset, "balanceOf", senderHash);
+        // transfer operation takes 4 arguments, amount is 3rd parameter
+        // push data parameter onto the stack then switch positions of the top
+        // two items on eval stack so data is 4th arg and balance is 3rd
+        sb.EmitPush(data);
+        sb.Emit(OpCode.SWAP);
+        sb.EmitPush(receiverHash);
+        sb.EmitPush(senderHash);
+        sb.EmitPush(4);
+        sb.Emit(OpCode.PACK);
+        sb.EmitPush("transfer");
+        sb.EmitPush(asset);
+        sb.EmitSysCall(ApplicationEngine.System_Contract_Call);
+        return await expressNode.ExecuteAsync(sender, senderHash, WitnessScope.CalledByEntry, sb.ToArray()).ConfigureAwait(false);
+      }
     }
 
     public static async Task<(RpcNep17Balance balance, Nep17Contract token)> GetBalanceAsync(this INode expressNode, UInt160 accountHash, string asset)

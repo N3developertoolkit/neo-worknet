@@ -11,6 +11,7 @@ namespace NeoShell
   [Subcommand(typeof(ContractCommand))]
   [Subcommand(typeof(ConnectCommand))]
   [Subcommand(typeof(ShowCommand))]
+  [Subcommand(typeof(TransferCommand))]
   class Program
   {
     public static async Task<int> Main(string[] args)
