@@ -1,8 +1,8 @@
 # Neo Shell (Preview)
 
-NEO Shell is a cross-platform and extensible, unified command-line interface for managing NEO chain resources on worknet and testnet. It enables users to execute commands through a terminal using interactive command-line prompts or scripts.
+Neo Shell is a cross-platform and extensible, unified command-line interface for managing #N3 chain resources on worknet and testnet etc. The Neo Shell enables developers to execute commands through a terminal using interactive command-line prompts or scripts.
 
-With NEO Shell, users can perform various tasks such as transferring funds, deploying contracts, invoking contracts, querying blocks, transactions, addresses and more. NEO Shell support for custom commands and extensions are planned.
+With Neo Shell, developers can perform various tasks such as deploying contracts, invoking contracts, querying blocks, transactions, addresses and more. Neo Shell support for custom commands and extensions is in the works. We expect that the #N3 ecosystem and communities will extend Neo Shell with additional tasks and utilities.
 
 ## Usage
 `neo COMMAND|EXTENSION [sub-commands] [—Global flags]`
