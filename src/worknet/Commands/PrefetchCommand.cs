@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using System.IO.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
-using Neo;
 using Neo.BlockchainToolkit.Persistence;
-using OneOf.Types;
+using NeoWorkNet.Node;
 
 namespace NeoWorkNet.Commands;
 
@@ -37,30 +36,8 @@ class PrefetchCommand
             }
 
             var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
-            var dataDir = fs.GetWorknetDataDirectory(filename);
-            if (!fs.Directory.Exists(dataDir)) throw new Exception($"Cannot locate data directory {dataDir}");
-
-            var contracts = chain.BranchInfo.Contracts;
-            if (!UInt160.TryParse(Contract, out var contractHash))
-            {
-                var info = contracts.SingleOrDefault(c => c.Name.Equals(Contract, StringComparison.OrdinalIgnoreCase));
-                contractHash = info?.Hash ?? UInt160.Zero;
-            }
-
-            if (contractHash == UInt160.Zero) throw new Exception("Invalid Contract argument");
-
-            var contractName = contracts.SingleOrDefault(c => c.Hash == contractHash)?.Name;
-            if (string.IsNullOrEmpty(contractName)) throw new Exception("Invalid Contract argument");
-
-            console.WriteLine($"Prefetching {contractName} ({contractHash}) records");
-
-            using var db = RocksDbUtility.OpenDb(dataDir);
-            using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db);
-            var result = await stateStore.PrefetchAsync(contractHash, token).ConfigureAwait(false);
-            if (result.TryPickT1(out Error<string> error, out _))
-            {
-                throw new Exception(error.Value);
-            }
+            var node = new WorkNetNode(chain, filename);
+            await node.PrefetchAsync(Contract, console, token).ConfigureAwait(false);
 
             return 0;
         }
