@@ -8,7 +8,7 @@ namespace NeoWorkNet.Commands
 {
     partial class WalletCommand
     {
-        [Command("create", Description = "Create neo-express wallet")]
+        [Command("create", Description = "Create neo-worknet wallet")]
         internal class Create
         {
             readonly IFileSystem fs;

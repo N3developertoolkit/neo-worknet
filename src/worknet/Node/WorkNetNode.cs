@@ -87,7 +87,7 @@ class WorkNetNode
 
         using var snapshot = new SnapshotCache(store.GetSnapshot());
 
-        // replace the Neo Committee with express consensus nodes
+        // replace the Neo Committee with worknet consensus nodes
         // Prefix_Committee stores array of structs containing PublicKey / vote count 
         var members = consensusAccounts.Select(a => new NeoStruct { a.GetKey().PublicKey.ToArray(), 0 });
         var committee = new NeoArray(members);
