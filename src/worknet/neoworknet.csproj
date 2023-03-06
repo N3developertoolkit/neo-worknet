@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <AssemblyName>neo-worknet</AssemblyName>
-    <Description></Description>
     <OutputType>Exe</OutputType>
     <PackageId>Neo.WorkNet</PackageId>
     <PackAsTool>true</PackAsTool>
