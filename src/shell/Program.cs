@@ -7,7 +7,7 @@ using NeoShell.Commands;
 
 namespace NeoShell
 {
-  [Command("neo", Description = "Neo N3 blockchain shell", UsePagerForHelpText = false)]
+  [Command("neosh", Description = "Neo N3 blockchain shell", UsePagerForHelpText = false)]
   [Subcommand(typeof(ContractCommand))]
   [Subcommand(typeof(ConnectCommand))]
   [Subcommand(typeof(ShowCommand))]

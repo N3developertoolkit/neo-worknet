@@ -6,7 +6,6 @@ from a public Neo N3 blockchain - including the official Neo N3 MainNet and T5 T
 the developer a local scratchpad environment that mirrors the state of a known public network at a 
 specified index. Changes to the local branch of the network are independent of the public network.
 
-
 > Note, you can pass -?|-h|--help to show a list of supported commands or to show
 > help information about a specific command.
 

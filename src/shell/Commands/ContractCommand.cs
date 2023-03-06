@@ -4,6 +4,7 @@ namespace NeoShell.Commands
 {
     [Command("contract", Description = "Commands to manage smart contracts")]
     [Subcommand(typeof(Run))]
+    [Subcommand(typeof(Invoke))]
     [Subcommand(typeof(List))]
     [Subcommand(typeof(Deploy))]
     [Subcommand(typeof(Update))]
