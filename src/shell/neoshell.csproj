@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>neosh</AssemblyName>
+    <AssemblyName>neo</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>Neo.Shell</PackageId>
     <PackAsTool>true</PackAsTool>

@@ -48,5 +48,5 @@ jobs:
     - name: Upload NeoWorknet
       uses: actions/upload-artifact@v3
       with:
-        name: trace
+        name: worknet
         path: ./out/Neo.WorkNet.*.nupkg
