@@ -1,14 +1,16 @@
 # Neo Shell and Worknet (Preview)
 
-Neo Shell is a cross-platform and extensible, unified command-line interface for managing Neo N3 chain resources on worknet
-and testnet etc. The Neo Shell enables developers to execute commands through a terminal using interactive command-line 
-prompts or scripts.
+Neo Shell is a cross-platform, extensible, unified command-line interface for managing Neo N3 chain resources on worknet, testnet etc. The Neo Shell enables developers to execute commands through a terminal using interactive command-line 
+prompts or scripts. Similar in spirit, and inspired by the likes of Unix-style shells, "neosh" is an extensible command processor that runs in a terminal window. 
 
 With Neo Shell, developers can perform various tasks such as deploying contracts, invoking contracts, querying blocks, 
-transactions, addresses and more. Neo Shell support for custom commands and extensions is in the works. We expect that 
-the Neo N3 ecosystem and communities will extend Neo Shell with additional tasks and utilities.
+transactions, addresses and more. Neo Shell support for custom commands and extensions is in the works. Neo Shell is designed with extensibility and customization in mind, and we expect that the Neo N3 ecosystem and communities will extend Neo Shell with additional tasks and utilities based on developer feedback. 
 
-The Neo-Worknet tool enables a developer to create and run a Neo N3 consensus node that branches from a public Neo N3 
+Neo WorkNet was developed based on community feedback and our own experience to fill a need that exists between privatenets, testnets and mainnets. There are four sets of capabilities that are packaged into the *new* New WorkNet.
+
+First, Neo WorkNet is designed to address the specific needs of teams of developers, from projects through to large organizations. We have in the backlog integrations for bug/issue tracking, restrospectives, sprint management etc. Second, Neo WorkNet is designed to mimic a point-in-time state of a testnet/mainnet, and enables the cloning of a specific instance; and which is expected to be eventually discarded and/or superceded by a newer point-in-time state. Third, Neo WorkNet is designed to enable an enhanced CI/CD developer experience. Lastly, similar to the Neo Shell, Neo Worknet is also architected with extensibility at its core, and is designed to be extended with plug-ins, to add newer capabilities over time.
+
+Neo Worknet enables a developer to create and run a Neo N3 consensus node that branches from a public Neo N3 
 blockchain - including the official Neo N3 Mainnet and T5 Testnet. This provides the developer a local environment that
 mirrors the state of a known public network at a branch point. Changes to the local branch of the network are independent 
 of the public network.
