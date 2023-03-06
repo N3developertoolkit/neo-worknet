@@ -7,7 +7,9 @@ jobs:
   pack:
     uses: ./.github/workflows/pack.yml
   publish:
-    if: startsWith(github.ref, 'refs/heads/release/')
+    # if: startsWith(github.ref, 'refs/heads/release/')
+    # While in preview, release from main branch
+    if: github.ref == 'refs/heads/main'
     needs: pack
     runs-on: ubuntu-latest
     steps:
