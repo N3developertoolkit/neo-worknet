@@ -12,10 +12,11 @@ partial class Program
         public void Apply(ConventionContext context)
         {
             if (context.ModelType is null) return;
+            if (context.ModelType.Equals(typeof(Program))) return;
             if (context.ModelType.Equals(typeof(Commands.CreateCommand))) return;
 
-            var subCmdAttrib = context.ModelType.GetCustomAttribute<SubcommandAttribute>();
-            if (subCmdAttrib is not null) return;
+            var subCmdAttribs = context.ModelType.GetCustomAttributes<SubcommandAttribute>();
+            if (subCmdAttribs.Any()) return;
 
             var parser = context.Application.ValueParsers.GetParser<string>()
                 ?? throw new InvalidOperationException("Can't get string value parser");
