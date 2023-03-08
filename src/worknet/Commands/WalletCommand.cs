@@ -3,7 +3,9 @@ using McMaster.Extensions.CommandLineUtils;
 namespace NeoWorkNet.Commands
 {
     [Command("wallet", Description = "Manage neo-worknet wallets")]
-    [Subcommand(typeof(Create), typeof(Delete), typeof(List))]
+    [Subcommand(typeof(Create))]
+    [Subcommand(typeof(Delete))]
+    [Subcommand(typeof(List))]
     partial class WalletCommand
     {
         internal int OnExecute(CommandLineApplication app, IConsole console)
