@@ -15,6 +15,17 @@
       "stopAtEntry": false
     },
     {
+      "name": "value update",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
+      "args": ["value", "update", "0xa7135470d299ed09caa12812809ea8adf909c31d 0x779f3fad83057b2dd0d74edbeb29e83f8c8ae5b5"],
+      "cwd": "${workspaceFolder}/src/worknet",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
       "name": "contract run",
       "type": "coreclr",
       "request": "launch",
