@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.IO.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
+using Neo;
+using Neo.BlockchainToolkit.Models;
 using NeoWorkNet.Node;
 
 namespace NeoWorkNet.Commands
@@ -19,11 +21,15 @@ namespace NeoWorkNet.Commands
           this.fs = fileSystem;
         }
 
-        [Argument(0, Description = "Key")]
+        [Argument(1, Description = "Contract name or hash")]
+        [Required]
+        internal string Contract { get; init; } = string.Empty;
+
+        [Argument(2, Description = "Key")]
         [Required]
         internal string Key { get; init; } = string.Empty;
 
-        [Argument(1, Description = "Key")]
+        [Argument(3, Description = "New value in Hex")]
         [Required]
         internal string Value { get; init; } = string.Empty;
 
@@ -33,7 +39,8 @@ namespace NeoWorkNet.Commands
           {
             var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
             var node = new WorkNetNode(chain, filename);
-            node.UpdateValue(Key, Value);
+            ContractInfo? contractInfo = ContractCommand.FindContractInfo(chain, Contract);
+            node.UpdateValue(contractInfo, Key.Substring(2), Value.Substring(2));
             return 0;
           }
           catch (Exception ex)
@@ -42,7 +49,6 @@ namespace NeoWorkNet.Commands
             return 1;
           }
         }
-
 
       }
     }

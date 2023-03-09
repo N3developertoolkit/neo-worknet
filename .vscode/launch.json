@@ -20,7 +20,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
-      "args": ["contract", "storage", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664"],
+      "args": ["contract", "storage", "get", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664"],
       "cwd": "${workspaceFolder}/src/worknet",
       "console": "integratedTerminal",
       "stopAtEntry": false
@@ -31,7 +31,18 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
-      "args": ["contract", "storage", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664", "0xFF"],
+      "args": ["contract", "storage", "get", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664", "0xFF"],
+      "cwd": "${workspaceFolder}/src/worknet",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "contract storage update",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
+      "args": ["contract", "storage", "update", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664", "0xFF", "0xCC"],
       "cwd": "${workspaceFolder}/src/worknet",
       "console": "integratedTerminal",
       "stopAtEntry": false
@@ -43,17 +54,6 @@
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
       "args": ["wallet", "list"],
-      "cwd": "${workspaceFolder}/src/worknet",
-      "console": "integratedTerminal",
-      "stopAtEntry": false
-    },
-    {
-      "name": "contract storage update",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
-      "args": ["contract", "storage", "update", "0xa7135470d299ed09caa12812809ea8adf909c31d", "0x779f3fad83057b2dd0d74edbeb29e83f8c8ae5b5"],
       "cwd": "${workspaceFolder}/src/worknet",
       "console": "integratedTerminal",
       "stopAtEntry": false

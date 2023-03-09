@@ -271,15 +271,14 @@ class WorkNetNode
     }
   }
 
-  public void UpdateValue(string key, string value)
+  public void UpdateValue(ContractInfo contract, string key, string value)
   {
     if (!Directory.Exists(NodePath)) InitializeStore();
     using var db = RocksDbUtility.OpenDb(NodePath);
     using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
     using var trackStore = new PersistentTrackingStore(db, stateStore, true);
-    var previousValue = trackStore.TryGet(Neo.Utility.StrictUTF8.GetBytes(key));
-    Console.WriteLine($"Previous value: {previousValue}");
-    trackStore.Put(Neo.Utility.StrictUTF8.GetBytes(key), Neo.Utility.StrictUTF8.GetBytes(value));
+    var searchKey = StorageKey.CreateSearchPrefix(contract.Id, Convert.FromHexString(key));
+    trackStore.Put(searchKey, Convert.FromHexString(value));
   }
 
   public IReadOnlyList<(byte[] key, byte[] value)> ListStorage(ContractInfo contract)
