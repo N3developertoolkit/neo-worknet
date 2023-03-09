@@ -42,24 +42,31 @@ namespace NeoWorkNet.Commands
 
         contractInfo = contracts.SingleOrDefault(c => c.Hash == contractHash);
         if (string.IsNullOrEmpty(contractInfo?.Name)) throw new Exception("Invalid Contract argument");
+        var writer = console.Out;
         if (Key == string.Empty)
         {
           var storageValues = node.ListStorage(contractInfo);
-          var writer = console.Out;
           await writer.WriteLineAsync($"contract:  {contractHash}").ConfigureAwait(false);
           for (int j = 0; j < storageValues.Count; j++)
           {
-            await writer.WriteLineAsync($"  key:     0x{Convert.ToHexString(storageValues[j].key)}").ConfigureAwait(false);
+            await writer.WriteLineAsync($"  key:     0x{Convert.ToHexString(StripContractIdStorageKey(storageValues[j].key))}").ConfigureAwait(false);
             await writer.WriteLineAsync($"    value: 0x{Convert.ToHexString(storageValues[j].value)}").ConfigureAwait(false);
           }
         }
         else
         {
-          var value = node.GetStorage(contractInfo, Convert.FromHexString(Key.Substring(2)));
-          console.WriteLine($"{Key}={value}");
+          byte[]? value = node.GetStorage(contractInfo, Convert.FromHexString(Key.Substring(2)));
+          var stringValue = value == null ? string.Empty : $"0x{Convert.ToHexString(value)}";
+          await writer.WriteLineAsync($"  key:     {Key}").ConfigureAwait(false);
+          await writer.WriteLineAsync($"    value: {stringValue}").ConfigureAwait(false);
         }
         return 0;
       }
+      private ReadOnlySpan<byte> StripContractIdStorageKey(byte[] key)
+      {
+        return key.AsSpan(sizeof(int));
+      }
     }
+
   }
 }

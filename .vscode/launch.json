@@ -20,7 +20,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
-      "args": ["contract", "storage", "0x50695ace7ab6c5f42d45828d36281bebd83201ee"],
+      "args": ["contract", "storage", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664"],
       "cwd": "${workspaceFolder}/src/worknet",
       "console": "integratedTerminal",
       "stopAtEntry": false
@@ -31,7 +31,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
-      "args": ["contract", "storage", "0x50695ace7ab6c5f42d45828d36281bebd83201ee", "0xFBFFFFFF0E"],
+      "args": ["contract", "storage", "0x1af8d22dd52c7f9b9981b9d4ac9464aeb0abd664", "0xFF"],
       "cwd": "${workspaceFolder}/src/worknet",
       "console": "integratedTerminal",
       "stopAtEntry": false

@@ -288,39 +288,29 @@ class WorkNetNode
     using var db = RocksDbUtility.OpenDb(NodePath);
     using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
     using var trackStore = new PersistentTrackingStore(db, stateStore, true);
-    var seekPrefix = CreateSearchPrefix(contract.Id, default);
-    IEnumerable<(byte[] Key, byte[] Value)> result = trackStore.Seek(seekPrefix, SeekDirection.Forward);
+    var seekPrefix = StorageKey.CreateSearchPrefix(contract.Id, default);
+    IEnumerable<(byte[] Key, byte[] Value)> result = Find(trackStore, seekPrefix);
     return result.ToList();
   }
 
-  public string GetStorage(ContractInfo contract, byte[] originalKey)
+  public byte[]? GetStorage(ContractInfo contract, byte[] prefix)
   {
-    var key1 = ListStorage(contract).ToArray()[1].key;
     if (!Directory.Exists(NodePath)) InitializeStore();
     using var db = RocksDbUtility.OpenDb(NodePath);
     using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
     using var trackStore = new PersistentTrackingStore(db, stateStore, true);
-    var tempKey = StripContractIdStorageKey(key1);
-    var originalInt = BinaryPrimitives.ReadInt32LittleEndian(key1.AsSpan(0,sizeof(int)));
-    Console.WriteLine($"original int: {originalInt}");
-    Console.WriteLine($"contract int: {contract.Id}");
-    Console.WriteLine($"original key: {Convert.ToHexString(key1)}");
-    var searchKey = CreateSearchPrefix(originalInt, tempKey);
-    Console.WriteLine($"search key: {Convert.ToHexString(searchKey)}");
-    byte[]? value = trackStore.TryGet(searchKey);
-    return value == null ? string.Empty : Convert.ToHexString(value);
+    byte[]? value = trackStore.TryGet(StorageKey.CreateSearchPrefix(contract.Id, prefix));
+    return value;
   }
 
-  public ReadOnlySpan<byte> StripContractIdStorageKey(byte[] key)
+  private IEnumerable<(byte[] Key, byte[] Value)> Find(IReadOnlyStore store, byte[] key_prefix)
   {
-    return key.AsSpan(sizeof(int));
+    foreach (var (key, value) in store.Seek(key_prefix, SeekDirection.Forward))
+      if (key.ToArray().AsSpan().StartsWith(key_prefix))
+        yield return (key, value);
+      else
+        yield break;
   }
 
-  public byte[] CreateSearchPrefix(int id, ReadOnlySpan<byte> prefix)
-  {
-    byte[] buffer = new byte[sizeof(int) + prefix.Length];
-    BinaryPrimitives.WriteInt32LittleEndian(buffer, id);
-    prefix.CopyTo(buffer.AsSpan(sizeof(int)));
-    return buffer;
-  }
+
 }
