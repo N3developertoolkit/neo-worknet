@@ -17,8 +17,8 @@ static class Utility
 
     public static async Task<(WorknetChain chain, string fileName)> LoadWorknetAsync(this IFileSystem fs, CommandLineApplication app)
     {
-        var option = app.GetOptions().Single(o => o.LongName == "input");
-        var fileName = fs.ResolveWorkNetFileName(option.Value() ?? string.Empty);
+        var option = app.GetOptions().SingleOrDefault(o => o.LongName == "input");
+        var fileName = fs.ResolveWorkNetFileName(option?.Value() ?? string.Empty);
         var chain = await fs.LoadWorknetAsync(fileName).ConfigureAwait(false);
         return (chain, fileName);
     }

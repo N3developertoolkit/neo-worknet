@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Net;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
@@ -7,14 +8,15 @@ using Neo.BlockchainToolkit.Persistence;
 using Neo.BlockchainToolkit.Plugins;
 using Neo.Cryptography;
 using Neo.IO;
+using Neo.Json;
 using Neo.Network.P2P.Payloads;
 using Neo.Network.RPC;
 using Neo.Persistence;
 using Neo.Plugins;
 using Neo.SmartContract;
+using Neo.SmartContract.Manifest;
 using Neo.SmartContract.Native;
 using Neo.Wallets;
-
 using NeoArray = Neo.VM.Types.Array;
 using NeoStruct = Neo.VM.Types.Struct;
 
@@ -278,5 +280,47 @@ class WorkNetNode
     var previousValue = trackStore.TryGet(Neo.Utility.StrictUTF8.GetBytes(key));
     Console.WriteLine($"Previous value: {previousValue}");
     trackStore.Put(Neo.Utility.StrictUTF8.GetBytes(key), Neo.Utility.StrictUTF8.GetBytes(value));
+  }
+
+  public IReadOnlyList<(byte[] key, byte[] value)> ListStorage(ContractInfo contract)
+  {
+    if (!Directory.Exists(NodePath)) InitializeStore();
+    using var db = RocksDbUtility.OpenDb(NodePath);
+    using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
+    using var trackStore = new PersistentTrackingStore(db, stateStore, true);
+    var seekPrefix = CreateSearchPrefix(contract.Id, default);
+    IEnumerable<(byte[] Key, byte[] Value)> result = trackStore.Seek(seekPrefix, SeekDirection.Forward);
+    return result.ToList();
+  }
+
+  public string GetStorage(ContractInfo contract, byte[] originalKey)
+  {
+    var key1 = ListStorage(contract).ToArray()[1].key;
+    if (!Directory.Exists(NodePath)) InitializeStore();
+    using var db = RocksDbUtility.OpenDb(NodePath);
+    using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
+    using var trackStore = new PersistentTrackingStore(db, stateStore, true);
+    var tempKey = StripContractIdStorageKey(key1);
+    var originalInt = BinaryPrimitives.ReadInt32LittleEndian(key1.AsSpan(0,sizeof(int)));
+    Console.WriteLine($"original int: {originalInt}");
+    Console.WriteLine($"contract int: {contract.Id}");
+    Console.WriteLine($"original key: {Convert.ToHexString(key1)}");
+    var searchKey = CreateSearchPrefix(originalInt, tempKey);
+    Console.WriteLine($"search key: {Convert.ToHexString(searchKey)}");
+    byte[]? value = trackStore.TryGet(searchKey);
+    return value == null ? string.Empty : Convert.ToHexString(value);
+  }
+
+  public ReadOnlySpan<byte> StripContractIdStorageKey(byte[] key)
+  {
+    return key.AsSpan(sizeof(int));
+  }
+
+  public byte[] CreateSearchPrefix(int id, ReadOnlySpan<byte> prefix)
+  {
+    byte[] buffer = new byte[sizeof(int) + prefix.Length];
+    BinaryPrimitives.WriteInt32LittleEndian(buffer, id);
+    prefix.CopyTo(buffer.AsSpan(sizeof(int)));
+    return buffer;
   }
 }

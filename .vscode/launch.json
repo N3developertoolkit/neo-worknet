@@ -15,14 +15,47 @@
       "stopAtEntry": false
     },
     {
-      "name": "value update",
+      "name": "contract storage (list)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
-      "args": ["value", "update", "0xa7135470d299ed09caa12812809ea8adf909c31d 0x779f3fad83057b2dd0d74edbeb29e83f8c8ae5b5"],
+      "args": ["contract", "storage", "0x50695ace7ab6c5f42d45828d36281bebd83201ee"],
       "cwd": "${workspaceFolder}/src/worknet",
-      "console": "internalConsole",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "contract storage (get)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
+      "args": ["contract", "storage", "0x50695ace7ab6c5f42d45828d36281bebd83201ee", "0xFBFFFFFF0E"],
+      "cwd": "${workspaceFolder}/src/worknet",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "wallet list",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
+      "args": ["wallet", "list"],
+      "cwd": "${workspaceFolder}/src/worknet",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "contract storage update",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet.dll",
+      "args": ["contract", "storage", "update", "0xa7135470d299ed09caa12812809ea8adf909c31d", "0x779f3fad83057b2dd0d74edbeb29e83f8c8ae5b5"],
+      "cwd": "${workspaceFolder}/src/worknet",
+      "console": "integratedTerminal",
       "stopAtEntry": false
     },
     {

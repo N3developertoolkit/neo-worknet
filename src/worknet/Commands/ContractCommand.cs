@@ -2,9 +2,9 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace NeoWorkNet.Commands
 {
-  [Command("value", Description = "Manage neo-worknet values")]
-  [Subcommand(typeof(Update))]
-  partial class ValueCommand
+  [Command("contract", Description = "Manage neo-worknet values")]
+  [Subcommand(typeof(Storage))]
+  partial class ContractCommand
   {
     internal int OnExecute(CommandLineApplication app, IConsole console)
     {

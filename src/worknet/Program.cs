@@ -13,7 +13,7 @@ namespace NeoWorkNet;
 [Subcommand(typeof(ResetCommand))]
 [Subcommand(typeof(RunCommand))]
 [Subcommand(typeof(WalletCommand))]
-[Subcommand(typeof(ValueCommand))]
+[Subcommand(typeof(ContractCommand))]
 partial class Program
 {
     public static async Task<int> Main(string[] args)
