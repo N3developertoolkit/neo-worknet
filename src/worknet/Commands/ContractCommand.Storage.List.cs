@@ -13,11 +13,11 @@ namespace NeoWorkNet.Commands
     // [Subcommand(typeof(Update))]
     internal partial class Storage
     {
-      [Command("get", Description = "Update a value in neo-worknet")]
-      internal class Get
+      [Command("list", Description = "List all storage values associated with a contract")]
+      internal class List
       {
         readonly IFileSystem fs;
-        public Get(IFileSystem fileSystem)
+        public List(IFileSystem fileSystem)
         {
           this.fs = fileSystem;
         }
@@ -26,9 +26,6 @@ namespace NeoWorkNet.Commands
         [Required]
         internal string Contract { get; init; } = string.Empty;
 
-        [Argument(1, Description = "Key")]
-        [Required]
-        internal string Key { get; init; } = string.Empty;
         internal async Task<int> OnExecuteAsync(CommandLineApplication app, IConsole console)
         {
           try
@@ -37,10 +34,15 @@ namespace NeoWorkNet.Commands
             var node = new WorkNetNode(chain, filename);
             ContractInfo? contractInfo = ContractCommand.FindContractInfo(chain, Contract);
             var writer = console.Out;
-            byte[]? value = node.GetStorage(contractInfo, Convert.FromHexString(Key.Substring(2)));
-            var stringValue = value == null ? string.Empty : $"0x{Convert.ToHexString(value)}";
-            await writer.WriteLineAsync($"  key:     {Key}").ConfigureAwait(false);
-            await writer.WriteLineAsync($"    value: {stringValue}").ConfigureAwait(false);
+
+            var storageValues = node.ListStorage(contractInfo);
+            await writer.WriteLineAsync($"contract:  {contractInfo.Hash}").ConfigureAwait(false);
+            for (int j = 0; j < storageValues.Count; j++)
+            {
+              await writer.WriteLineAsync($"  key:     0x{Convert.ToHexString(StripContractIdStorageKey(storageValues[j].key))}").ConfigureAwait(false);
+              await writer.WriteLineAsync($"    value: 0x{Convert.ToHexString(storageValues[j].value)}").ConfigureAwait(false);
+            }
+
             return 0;
           }
           catch (Exception ex)

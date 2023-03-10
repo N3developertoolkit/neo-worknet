@@ -8,7 +8,7 @@ namespace NeoWorkNet.Commands
   partial class ContractCommand
   {
     [Command("Storage", Description = "Manage neo-worknet values")]
-    [Subcommand(typeof(Get), typeof(Update))]
+    [Subcommand(typeof(List), typeof(Get), typeof(Update))]
     partial class Storage
     {
       internal int OnExecute(CommandLineApplication app, IConsole console)
