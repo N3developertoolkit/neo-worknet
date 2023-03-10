@@ -21,6 +21,9 @@ namespace NeoWorkNet.Commands
       ContractInfo? contractInfo;
       if (!UInt160.TryParse(contract, out var contractHash))
       {
+        var contractCount = contracts.Count(c => c.Name.Equals(contract, StringComparison.OrdinalIgnoreCase));
+        if (contractCount == 0) throw new Exception($"Cannot find contract: {contract}");
+        if (contractCount > 1) throw new Exception("Contract name is not unique. Please use contract hash instead.");
         contractInfo = contracts.SingleOrDefault(c => c.Name.Equals(contract, StringComparison.OrdinalIgnoreCase));
         contractHash = contractInfo?.Hash ?? UInt160.Zero;
       }

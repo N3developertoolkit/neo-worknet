@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.IO.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
-using Neo;
 using Neo.BlockchainToolkit.Models;
+using Neo.Wallets;
 using NeoWorkNet.Node;
 
 namespace NeoWorkNet.Commands
@@ -38,9 +38,11 @@ namespace NeoWorkNet.Commands
           try
           {
             var (chain, filename) = await fs.LoadWorknetAsync(app).ConfigureAwait(false);
+            byte[] keyBytes = GetKeyInBytes();
+            byte[] valueBytes = GetValueInBytes(chain);
             var node = new WorkNetNode(chain, filename);
             ContractInfo? contractInfo = ContractCommand.FindContractInfo(chain, Contract);
-            node.UpdateValue(contractInfo, Key.Substring(2), Value.Substring(2));
+            node.UpdateValue(contractInfo, keyBytes, valueBytes);
             return 0;
           }
           catch (Exception ex)
@@ -50,6 +52,48 @@ namespace NeoWorkNet.Commands
           }
         }
 
+        private byte[] GetValueInBytes(WorknetChain chain)
+        {
+          byte[] valueBytes;
+          if (Value.StartsWith("N"))
+          {
+            try
+            {
+              var valueScriptHash = Value.ToScriptHash(chain.BranchInfo.AddressVersion);
+              valueBytes = Neo.IO.Helper.ToArray(valueScriptHash);
+            }
+            catch (System.FormatException)
+            {
+              throw new ArgumentException("Value format is invalid");;
+            }
+
+          }
+          else if (Value.StartsWith("0x"))
+          {
+            valueBytes = Convert.FromHexString(Value.Substring(2));
+          }
+          else
+          {
+            throw new ArgumentException("Value must starts with 0x or N");
+          }
+
+          return valueBytes;
+        }
+
+        private byte[] GetKeyInBytes()
+        {
+          byte[] keyBytes;
+          if (Key.StartsWith("0x") == false)
+          {
+            throw new ArgumentException("Key must starts with 0x");
+          }
+          else
+          {
+            keyBytes = Convert.FromHexString(Key.Substring(2));
+          }
+
+          return keyBytes;
+        }
       }
     }
   }
