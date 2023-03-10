@@ -42,6 +42,9 @@ namespace NeoWorkNet.Commands
             byte[] valueBytes = GetValueInBytes(chain);
             var node = new WorkNetNode(chain, filename);
             ContractInfo? contractInfo = ContractCommand.FindContractInfo(chain, Contract);
+            if(contractInfo.Id < 0){
+              throw new ArgumentException("Updating storage value for native Contracts are not allowed.");
+            }
             node.UpdateValue(contractInfo, keyBytes, valueBytes);
             return 0;
           }
