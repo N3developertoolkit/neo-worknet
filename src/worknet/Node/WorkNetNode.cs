@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Net;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
@@ -7,14 +8,15 @@ using Neo.BlockchainToolkit.Persistence;
 using Neo.BlockchainToolkit.Plugins;
 using Neo.Cryptography;
 using Neo.IO;
+using Neo.Json;
 using Neo.Network.P2P.Payloads;
 using Neo.Network.RPC;
 using Neo.Persistence;
 using Neo.Plugins;
 using Neo.SmartContract;
+using Neo.SmartContract.Manifest;
 using Neo.SmartContract.Native;
 using Neo.Wallets;
-
 using NeoArray = Neo.VM.Types.Array;
 using NeoStruct = Neo.VM.Types.Struct;
 
@@ -268,4 +270,55 @@ class WorkNetNode
             return RpcServerSettings.Load(config.GetSection("PluginConfiguration"));
         }
     }
+
+    public void UpdateValue(ContractInfo contract, byte[] key, byte[] value)
+    {
+        if (!Directory.Exists(NodePath)) InitializeStore();
+        using var db = RocksDbUtility.OpenDb(NodePath);
+        using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
+        using var trackStore = new PersistentTrackingStore(db, stateStore, true);
+        var searchKey = StorageKey.CreateSearchPrefix(contract.Id, key);
+        trackStore.Put(searchKey, value);
+    }
+
+    public IReadOnlyList<(byte[] key, byte[] value)> ListStorage(ContractInfo contract)
+    {
+        if (!Directory.Exists(NodePath)) InitializeStore();
+        using var db = RocksDbUtility.OpenDb(NodePath);
+        using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
+        using var trackStore = new PersistentTrackingStore(db, stateStore, true);
+        var seekPrefix = StorageKey.CreateSearchPrefix(contract.Id, default);
+        IEnumerable<(byte[] Key, byte[] Value)> result = TryFind(trackStore, seekPrefix);
+        return result.ToList();
+    }
+
+    public byte[]? GetStorage(ContractInfo contract, byte[] prefix)
+    {
+        if (!Directory.Exists(NodePath)) InitializeStore();
+        using var db = RocksDbUtility.OpenDb(NodePath);
+        using var stateStore = new StateServiceStore(chain.Uri, chain.BranchInfo, db, true);
+        using var trackStore = new PersistentTrackingStore(db, stateStore, true);
+        byte[]? value = trackStore.TryGet(StorageKey.CreateSearchPrefix(contract.Id, prefix));
+        return value;
+    }
+
+    private IEnumerable<(byte[] Key, byte[] Value)> TryFind(IReadOnlyStore store, byte[] key_prefix)
+    {
+        IEnumerable<(byte[] Key, byte[] Value)> result = Enumerable.Empty<(byte[] Key, byte[] Value)>();
+        try
+        {
+            result = store.Seek(key_prefix, SeekDirection.Forward);
+        }
+        catch (System.IndexOutOfRangeException)
+        {
+            yield break;
+        }
+        foreach (var (key, value) in result)
+            if (key.ToArray().AsSpan().StartsWith(key_prefix))
+                yield return (key, value);
+            else
+                yield break;
+    }
+
+
 }
