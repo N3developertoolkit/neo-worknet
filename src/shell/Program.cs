@@ -45,7 +45,9 @@ namespace NeoShell
                 command.Argument(subargs.Trim(), String.Empty, subargs != String.Empty);
                 command.OnExecute(() =>
               {
-                  return ExecuteProcess(args, worknet);
+                 var chainFactory = services.GetService<ExpressChainManagerFactory>();
+                 var input = chainFactory != null ? chainFactory.GetConnectionFilePath(string.Empty) : string.Empty;
+                  return ExecuteProcess(args, worknet, input);
               });
             });
             try
@@ -72,7 +74,7 @@ namespace NeoShell
             }
         }
 
-        private static int ExecuteProcess(string[] args, string cmd)
+        private static int ExecuteProcess(string[] args, string cmd, string input)
         {
             var process = new Process();
             process.StartInfo.FileName = cmd;
@@ -82,7 +84,10 @@ namespace NeoShell
             {
                 process.StartInfo.ArgumentList.Add(args[i]);
             }
-
+            if(!string.IsNullOrEmpty(input))
+            {
+                process.StartInfo.ArgumentList.Add($"--input={input}");
+            }
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
