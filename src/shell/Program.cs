@@ -101,7 +101,6 @@ namespace NeoShell
 
             if (!string.IsNullOrWhiteSpace(error))
             {
-                Console.WriteLine("Error:");
                 Console.WriteLine(error);
             }
             return process.ExitCode;
