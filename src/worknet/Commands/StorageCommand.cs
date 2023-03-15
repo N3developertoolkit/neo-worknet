@@ -4,8 +4,7 @@ using Neo.BlockchainToolkit.Models;
 
 namespace NeoWorkNet.Commands
 {
-
-    [Command("Storage", Description = "Manage neo-worknet values")]
+    [Command("storage", Description = "Manage neo-worknet contract storage values")]
     [Subcommand(typeof(List), typeof(Get), typeof(Update))]
     partial class StorageCommand
     {
