@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using NeoShell.Commands;
-
+using NeoShell.Models;
+using Newtonsoft.Json;
 
 namespace NeoShell
 {
@@ -31,28 +32,20 @@ namespace NeoShell
             app.Conventions
                 .UseDefaultConventions()
                 .UseConstructorInjection(services);
-            var worknet = "neo-worknet";
-            app.Command(worknet, command =>
-            {
-                int index = Array.IndexOf(args, worknet);
-                var subargs = "";
-                for (int i = index + 1; i < args.Length; i++)
-                {
-                    subargs += args[i] + " ";
-                     
-                }
-                subargs = subargs.Trim();
-                command.Argument(subargs.Trim(), String.Empty, subargs != String.Empty);
-                command.OnExecute(() =>
-              {
-                 var chainFactory = services.GetService<ExpressChainManagerFactory>();
-                 var input = chainFactory != null ? chainFactory.GetConnectionFilePath(string.Empty) : string.Empty;
-                  return ExecuteProcess(args, worknet, input);
-              });
-            });
+            ShellExtensions extensions = LoadShellExtensions(services.GetService<IFileSystem>());
             try
             {
-                return await app.ExecuteAsync(args);
+                ShellExtension? extension;
+                if (extensions.TryFindCommand(args, out extension) && extension != null)
+                {
+                    var chainFactory = services.GetService<ExpressChainManagerFactory>();
+                    var input = chainFactory != null ? chainFactory.GetConnectionFilePath(string.Empty) : string.Empty;
+                    return extension.Execute(args, input, Console.Out, Console.Error);
+                }
+                else
+                {
+                    return await app.ExecuteAsync(args);
+                }
             }
             catch (CommandParsingException ex)
             {
@@ -74,6 +67,23 @@ namespace NeoShell
             }
         }
 
+        private static ShellExtensions LoadShellExtensions(IFileSystem? fileSystem)
+        {
+            if (fileSystem == null)
+            {
+                return new ShellExtensions();
+            }
+            string rootPath = fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".neo");
+            string filePath = fileSystem.Path.Combine(rootPath, "extensions.json");
+            if (!fileSystem.File.Exists(filePath))
+            {
+                return new ShellExtensions();
+            }
+            string json = File.ReadAllText(filePath);
+            var extensions = ShellExtensions.FromJson(json);
+            return extensions;
+        }
+
         private static int ExecuteProcess(string[] args, string cmd, string input)
         {
             var process = new Process();
@@ -84,7 +94,7 @@ namespace NeoShell
             {
                 process.StartInfo.ArgumentList.Add(args[i]);
             }
-            if(!string.IsNullOrEmpty(input))
+            if (!string.IsNullOrEmpty(input))
             {
                 process.StartInfo.ArgumentList.Add($"--input={input}");
             }
