@@ -6,22 +6,24 @@ namespace NeoShell.Models
     class ShellExtension
     {
 
-        public ShellExtension(string name, string command)
+        public ShellExtension(string name, string subCommand, string mapsToCommand)
         {
             this.Name = name;
-            this.Command = command;
+            this.SubCommand = subCommand;
+            this.MapsToCommand = mapsToCommand;
 
         }
 
         public string Name { get; set; }
-        public string Command { get; set; }
+        public string SubCommand { get; set; }
+        public string MapsToCommand { get; set; }
 
         public int Execute(string[] args, string input, TextWriter sdoutWriter, TextWriter errorWriter)
         {
             var process = new Process();
-            process.StartInfo.FileName = this.Command;
+            process.StartInfo.FileName = this.MapsToCommand;
             var arguments = new List<string>();
-            int index = Array.IndexOf(args, this.Command);
+            int index = Array.IndexOf(args, this.SubCommand);
             for (int i = index + 1; i < args.Length; i++)
             {
                 process.StartInfo.ArgumentList.Add(args[i]);

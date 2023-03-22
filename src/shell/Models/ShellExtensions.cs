@@ -12,7 +12,7 @@ namespace NeoShell.Models
             {
                 foreach (var extension in this)
                 {
-                    if (string.Equals(arg, extension.Command, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(arg, extension.SubCommand, StringComparison.OrdinalIgnoreCase))
                     {
                         command = extension;
                         return true;
