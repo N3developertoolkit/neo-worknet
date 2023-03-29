@@ -57,7 +57,7 @@ namespace NeoShell.Models
         //     return process.ExitCode;
         // }
 
-        public async Task<int> ExecuteAsync(string[] args, string input, TextWriter sdoutWriter, TextWriter errorWriter, ExpressChainManagerFactory chainManagerFactory, TransactionExecutorFactory txExecutorFactory)
+        public async Task<int> ExecuteAsync(string[] args, string input, TextWriter sdoutWriter, TextWriter errorWriter, ExpressChainManagerFactory? chainManagerFactory, TransactionExecutorFactory? txExecutorFactory)
         {
             var process = new Process();
             process.StartInfo.FileName = this.MapsToCommand;
@@ -87,6 +87,11 @@ namespace NeoShell.Models
                 {
                     throw new Exception("Invalid invocation parameters from the subcommand.");
                 }
+                if(chainManagerFactory == null || txExecutorFactory == null)
+                {
+                    throw new Exception("ChainManagerFactory or TransactionExecutorFactory is not initialized.");
+                }
+                
                 var (chainManager, _) = chainManagerFactory.LoadChain(input);
                 using var txExec = txExecutorFactory.Create(chainManager, true, false); //TODO: need to handle Trace and JSON
                 var script = await txExec.BuildInvocationScriptAsync(invokeParams.Contract, invokeParams.Method, invokeParams.Arguments).ConfigureAwait(false);
@@ -97,10 +102,10 @@ namespace NeoShell.Models
                 await sdoutWriter.WriteLineAsync(output);
             }
 
-            var error = process.StandardError.ReadToEnd();
+            var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrWhiteSpace(error))
             {
-                errorWriter.WriteLine(error);
+                await errorWriter.WriteLineAsync(error);
             }
             return process.ExitCode;
         }
