@@ -38,9 +38,10 @@ namespace NeoShell
                 ShellExtension? extension;
                 if (extensions.TryFindCommand(args, out extension) && extension != null)
                 {
-                    var chainFactory = services.GetService<ExpressChainManagerFactory>();
+                    var chainFactory = services.GetRequiredService<ExpressChainManagerFactory>();
+                    var txExecutorFactory = services.GetRequiredService<TransactionExecutorFactory>();
                     var input = chainFactory != null ? chainFactory.GetConnectionFilePath(string.Empty) : string.Empty;
-                    return extension.Execute(args, input, Console.Out, Console.Error);
+                    return await extension.ExecuteAsync(args, input, Console.Out, Console.Error, chainFactory, txExecutorFactory);
                 }
                 else
                 {
