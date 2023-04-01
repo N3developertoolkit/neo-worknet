@@ -1,5 +1,8 @@
 
 using System.Diagnostics;
+using Neo;
+using Neo.Network.P2P.Payloads;
+using Neo.Wallets;
 using Newtonsoft.Json;
 
 namespace NeoShell.Models
@@ -8,7 +11,7 @@ namespace NeoShell.Models
     {
 
         public record SubCommand(string Command, bool isTransaction);
-        public record InvocationParameter(string Contract, string Method, string[] Arguments);
+        public record InvocationParameter(string Contract, string Method, string Account, string[] Arguments);
 
         public ShellExtension()
         {
@@ -87,15 +90,15 @@ namespace NeoShell.Models
                 {
                     throw new Exception("Invalid invocation parameters from the subcommand.");
                 }
-                if(chainManagerFactory == null || txExecutorFactory == null)
+                if (chainManagerFactory == null || txExecutorFactory == null)
                 {
                     throw new Exception("ChainManagerFactory or TransactionExecutorFactory is not initialized.");
                 }
-                
+
                 var (chainManager, _) = chainManagerFactory.LoadChain(input);
                 using var txExec = txExecutorFactory.Create(chainManager, true, false); //TODO: need to handle Trace and JSON
                 var script = await txExec.BuildInvocationScriptAsync(invokeParams.Contract, invokeParams.Method, invokeParams.Arguments).ConfigureAwait(false);
-
+                await txExec.InvokeForResultsAsync(script, invokeParams.Account, WitnessScope.CalledByEntry).ConfigureAwait(false);
             }
             else
             {

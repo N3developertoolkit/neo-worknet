@@ -2,42 +2,31 @@ using System.ComponentModel.DataAnnotations;
 using System.IO.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
 using Neo;
-using Neo.Wallets;
-using Neo.BlockchainToolkit.Models;
 using Newtonsoft.Json;
 
 namespace NeoNft.Commands
 {
-    [Command("transfer", Description = "Transfer a NFT to another address")]
-    partial class TransferCommand
+    [Command("owner", Description = "Transfer a NFT to another address")]
+    partial class OwnerOfCommand
     {
         [Option(Description = "Path to neo data file")]
         internal string Input { get; init; } = string.Empty;
-
         [Argument(0, Description = "Contract hash of the NFT contract")]
         [Required]
         internal string Contract { get; init; } = string.Empty;
 
-        [Argument(1, Description = "Address to transfer to")]
-        [Required]
-        internal string To { get; init; } = string.Empty;
-
-        [Argument(2, Description = "NFT ID to transfer")]
+        [Argument(1, Description = "NFT ID to transfer")]
         [Required]
         internal string Id { get; init; } = string.Empty;
 
-        [Option(Description = "Account to pay contract invocation GAS fee")]
+        [Option(Description = "Account")]
         internal string Account { get; init; } = string.Empty;
-
-        [Argument(3, Description = "Data")]
-        internal string Data { get; init; } = string.Empty;
-
 
         internal int OnExecute(CommandLineApplication app, IConsole console)
         {
             try
             {
-                var payload = new { Contract = this.Contract, Method = "transfer", Account = this.Account, Arguments = new[] { this.To, this.Id, this.Data } };
+                var payload = new { Contract = this.Contract, Method = "ownerOf", Account = this.Account, Arguments = new[] { this.Id } };
                 Console.WriteLine(JsonConvert.SerializeObject(payload));
                 return 0;
             }

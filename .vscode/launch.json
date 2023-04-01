@@ -75,7 +75,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
-      "args": ["nft", "transfer", "DevHawk.Registrar", "query", "ff","f", "--account", "default"],
+      "args": ["nft", "transfer", "NeoContributorToken", "0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0x1727A97FFDE4DC46E687959ED82D038BF5AEF5FF384AAFBA246D23629B3FC675","-a", "node1"],
       "cwd": "${workspaceFolder}/src",
       "console": "internalConsole",
       "stopAtEntry": false

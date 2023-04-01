@@ -6,7 +6,7 @@ using NeoNft.Commands;
 namespace NeoNft
 {
     [Command("nft")]
-    [Subcommand(typeof(TransferCommand))]
+    [Subcommand(typeof(TransferCommand), typeof(OwnerOfCommand))]
     class Program
     {
         public static Task<int> Main(string[] args)
