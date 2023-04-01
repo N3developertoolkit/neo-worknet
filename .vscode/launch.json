@@ -64,7 +64,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
-      "args": ["contract", "run", "DevHawk.Registrar", "query", "sample.domain", "--results"],
+      "args": ["contract", "run", "NeoContributorToken", "transfer", "0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0x1727A97FFDE4DC46E687959ED82D038BF5AEF5FF384AAFBA246D23629B3FC675","data","--account node1"],
       "cwd": "${workspaceFolder}/src",
       "console": "internalConsole",
       "stopAtEntry": false
@@ -75,7 +75,18 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
-      "args": ["nft", "transfer", "NeoContributorToken", "0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0x1727A97FFDE4DC46E687959ED82D038BF5AEF5FF384AAFBA246D23629B3FC675","-a", "node1"],
+      "args": ["nft", "transfer", "NeoContributorToken", "0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0x1727A97FFDE4DC46E687959ED82D038BF5AEF5FF384AAFBA246D23629B3FC675","anything","-a", "node1"],
+      "cwd": "${workspaceFolder}/src",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": "nft owner of",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+      "args": ["nft", "owner", "NeoContributorToken", "0xDA21F035A927F25105F02F71CD6D5266F19742B703CC5FEE6369E036D3E3A168", "-a", "node1"],
       "cwd": "${workspaceFolder}/src",
       "console": "internalConsole",
       "stopAtEntry": false

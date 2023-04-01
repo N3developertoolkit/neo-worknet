@@ -15,7 +15,7 @@ namespace NeoNft.Commands
         [Required]
         internal string Contract { get; init; } = string.Empty;
 
-        [Argument(1, Description = "NFT ID to transfer")]
+        [Argument(1, Description = "NFT ID")]
         [Required]
         internal string Id { get; init; } = string.Empty;
 
