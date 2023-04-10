@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Neo;
 using Neo.Network.P2P.Payloads;
-using Neo.Wallets;
+using Neo.VM;
 using Newtonsoft.Json;
 
 namespace NeoShell.Models
@@ -10,8 +10,8 @@ namespace NeoShell.Models
     class ShellExtension
     {
 
-        public record SubCommand(string Command, bool InvokeContract, bool WaitForResults);
-        public record InvocationParameter(string Contract, string Method, string Account, string[] Arguments);
+        public record SubCommand(string Command, bool InvokeContract, bool Safe);
+        public record InvocationParameter(string Script, string Account);
 
         public ShellExtension()
         {
@@ -67,10 +67,10 @@ namespace NeoShell.Models
 
                 var (chainManager, _) = chainManagerFactory.LoadChain(input);
                 using var txExec = txExecutorFactory.Create(chainManager, true, false); //TODO: need to handle Trace and JSON
-                var script = await txExec.BuildInvocationScriptAsync(invokeParams.Contract, invokeParams.Method, invokeParams.Arguments).ConfigureAwait(false);
-                if (subCommand.WaitForResults)
+                var script = new Script(Convert.FromBase64String(invokeParams.Script));
+                if (subCommand.Safe)
                 {
-                    await txExec.InvokeForResultsAsync(script, invokeParams.Account, WitnessScope.CalledByEntry).ConfigureAwait(false);
+                    await txExec.InvokeForResultsAsync(script, "node1", WitnessScope.CalledByEntry).ConfigureAwait(false);
                 }
                 else
                 {

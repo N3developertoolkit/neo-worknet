@@ -122,6 +122,54 @@
         // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
         "console": "internalConsole",
         "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "neosh nft transfer",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+        "args": ["nft","transfer", "0x1fc6ede613b67a4bc20cefb103738c948bd0b1fe","0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0xFD3C2163A6B3816AD243BF4E6DE6A363B285B63D4757108796B27D1DC10C6F7A","node1"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "neosh nft ownerOf",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+        "args": ["nft","ownerOf", "0x1fc6ede613b67a4bc20cefb103738c948bd0b1fe", "0xFD3C2163A6B3816AD243BF4E6DE6A363B285B63D4757108796B27D1DC10C6F7A"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "nft transfer",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/nft/bin/Debug/net6.0/neonft",
+        "args": ["transfer", "0x1fc6ede613b67a4bc20cefb103738c948bd0b1fe","0xf898fec9055cc080f46ed38f2a7430b9b245a5a8","0xFD3C2163A6B3816AD243BF4E6DE6A363B285B63D4757108796B27D1DC10C6F7A","node1"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
       }
   ]
 }

@@ -2,8 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.IO.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
 using Neo;
-using Neo.Wallets;
 using Neo.BlockchainToolkit.Models;
+using Neo.VM;
 using Newtonsoft.Json;
 
 namespace NeoNft.Commands
@@ -26,18 +26,27 @@ namespace NeoNft.Commands
         [Required]
         internal string Id { get; init; } = string.Empty;
 
-        [Option(Description = "Account to pay contract invocation GAS fee")]
+        [Argument(3, Description = "NFT contract owner account")]
+        [Required]
         internal string Account { get; init; } = string.Empty;
 
-        [Argument(3, Description = "Data")]
-        internal string Data { get; init; } = string.Empty;
 
 
         internal int OnExecute(CommandLineApplication app, IConsole console)
         {
             try
             {
-                var payload = new { Contract = this.Contract, Method = "transfer", Account = this.Account, Arguments = new[] { this.To, this.Id, this.Data } };
+                UInt160.TryParse(this.Contract, out var contractHash);
+                UInt160.TryParse(this.To, out var toHash);
+                var hexString = this.Id;
+                if (this.Id.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                {
+                    hexString = hexString.Substring(2);
+                }
+
+                var idBytes = hexString.HexToBytes();
+                var script = contractHash.MakeScript("transfer", toHash, idBytes, string.Empty);
+                var payload = new { Script = Convert.ToBase64String(script), Account = this.Account };
                 Console.WriteLine(JsonConvert.SerializeObject(payload));
                 return 0;
             }
