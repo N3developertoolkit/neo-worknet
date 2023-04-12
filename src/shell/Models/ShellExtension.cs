@@ -11,7 +11,7 @@ namespace NeoShell.Models
     {
 
         public record SubCommand(string Command, bool InvokeContract, bool Safe);
-        public record InvocationParameter(string Script, string Account);
+        public record InvocationParameter(string Script, string Account, bool Trace, bool Json);
 
         public ShellExtension()
         {
@@ -31,25 +31,10 @@ namespace NeoShell.Models
 
         public async Task<int> ExecuteAsync(string[] args, string input, TextWriter sdoutWriter, TextWriter errorWriter, ExpressChainManagerFactory? chainManagerFactory, TransactionExecutorFactory? txExecutorFactory)
         {
-            var process = new Process();
-            process.StartInfo.FileName = this.MapsToCommand;
-            var arguments = new List<string>();
-            int index = Array.IndexOf(args, this.Command);
-            string subCommandName = args[index + 1];
-            for (int i = index + 1; i < args.Length; i++)
-            {
-                process.StartInfo.ArgumentList.Add(args[i]);
-            }
-            if (!string.IsNullOrEmpty(input))
-            {
-                process.StartInfo.ArgumentList.Add($"--input={input}");
-            }
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
+            var (subCommandName, index) = ExtractCommandFromArguments(args, this.Command);
+            Process process = CreateNewProcess(args, input, index);
             process.Start();
             process.WaitForExit();
-            // Read the output and error streams
             using var reader = new StreamReader(process.StandardOutput.BaseStream);
             string output = await reader.ReadToEndAsync();
             var subCommand = this.Find(subCommandName);
@@ -66,11 +51,11 @@ namespace NeoShell.Models
                 }
 
                 var (chainManager, _) = chainManagerFactory.LoadChain(input);
-                using var txExec = txExecutorFactory.Create(chainManager, true, false); //TODO: need to handle Trace and JSON
+                using var txExec = txExecutorFactory.Create(chainManager, invokeParams.Trace, invokeParams.Json);
                 var script = new Script(Convert.FromBase64String(invokeParams.Script));
                 if (subCommand.Safe)
                 {
-                    await txExec.InvokeForResultsAsync(script, "node1", WitnessScope.CalledByEntry).ConfigureAwait(false);
+                    await txExec.InvokeForResultsAsync(script, invokeParams.Account ?? string.Empty, WitnessScope.CalledByEntry).ConfigureAwait(false);
                 }
                 else
                 {
@@ -81,8 +66,6 @@ namespace NeoShell.Models
                         await txExec.ContractInvokeAsync(script, invokeParams.Account, password, WitnessScope.CalledByEntry, 0);
                     }
                 }
-                // 
-
             }
             else
             {
@@ -96,5 +79,33 @@ namespace NeoShell.Models
             }
             return process.ExitCode;
         }
+
+        private Process CreateNewProcess(string[] args, string input, int index)
+        {
+            var process = new Process();
+            process.StartInfo.FileName = this.MapsToCommand;
+            var arguments = new List<string>();
+
+            for (int i = index + 1; i < args.Length; i++)
+            {
+                process.StartInfo.ArgumentList.Add(args[i]);
+            }
+            if (!string.IsNullOrEmpty(input))
+            {
+                process.StartInfo.ArgumentList.Add($"--input={input}");
+            }
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            return process;
+        }
+
+        private (string, int) ExtractCommandFromArguments(string[] args, string command)
+        {
+            var index = Array.IndexOf(args, command);
+            var subCommandName = args[index + 1];
+            return (subCommandName, index);
+        }
+
     }
 }

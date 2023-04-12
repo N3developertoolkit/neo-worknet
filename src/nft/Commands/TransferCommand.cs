@@ -30,6 +30,12 @@ namespace NeoNft.Commands
         [Required]
         internal string Account { get; init; } = string.Empty;
 
+        [Option(Description = "Enable contract execution tracing")]
+        internal bool Trace { get; init; } = false;
+
+        [Option(Description = "Output as JSON")]
+        internal bool Json { get; init; } = false;
+
 
 
         internal int OnExecute(CommandLineApplication app, IConsole console)
@@ -46,7 +52,7 @@ namespace NeoNft.Commands
 
                 var idBytes = hexString.HexToBytes();
                 var script = contractHash.MakeScript("transfer", toHash, idBytes, string.Empty);
-                var payload = new { Script = Convert.ToBase64String(script), Account = this.Account };
+                var payload = new { Script = Convert.ToBase64String(script), Account = this.Account, Trace = this.Trace, Json = this.Json };
                 Console.WriteLine(JsonConvert.SerializeObject(payload));
                 return 0;
             }
