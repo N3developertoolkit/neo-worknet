@@ -32,6 +32,10 @@ namespace NeoShell.Models
         public async Task<int> ExecuteAsync(string[] args, string input, TextWriter sdoutWriter, TextWriter errorWriter, ExpressChainManagerFactory? chainManagerFactory, TransactionExecutorFactory? txExecutorFactory)
         {
             var (subCommandName, index) = ExtractCommandFromArguments(args, this.Command);
+            if(string.IsNullOrWhiteSpace(subCommandName) || index < 0)
+            {
+                throw new Exception("Invalid subcommand.");
+            }
             Process process = CreateNewProcess(args, input, index);
             process.Start();
             process.WaitForExit();
@@ -40,32 +44,7 @@ namespace NeoShell.Models
             var subCommand = this.Find(subCommandName);
             if (subCommand != null && subCommand.InvokeContract)
             {
-                var invokeParams = JsonConvert.DeserializeObject<InvocationParameter>(output);
-                if (invokeParams == null)
-                {
-                    throw new Exception("Invalid invocation parameters from the subcommand.");
-                }
-                if (chainManagerFactory == null || txExecutorFactory == null)
-                {
-                    throw new Exception("ChainManagerFactory or TransactionExecutorFactory is not initialized.");
-                }
-
-                var (chainManager, _) = chainManagerFactory.LoadChain(input);
-                using var txExec = txExecutorFactory.Create(chainManager, invokeParams.Trace, invokeParams.Json);
-                var script = new Script(Convert.FromBase64String(invokeParams.Script));
-                if (subCommand.Safe)
-                {
-                    await txExec.InvokeForResultsAsync(script, invokeParams.Account ?? string.Empty, WitnessScope.CalledByEntry).ConfigureAwait(false);
-                }
-                else
-                {
-                    var password = string.Empty;
-                    if (!invokeParams.Account.IsWIFString())
-                    {
-                        password = chainManager.Chain.ResolvePassword(invokeParams.Account, password);
-                        await txExec.ContractInvokeAsync(script, invokeParams.Account, password, WitnessScope.CalledByEntry, 0);
-                    }
-                }
+                await HandleTransactionsAsync(input, chainManagerFactory, txExecutorFactory, output, subCommand).ConfigureAwait(false);
             }
             else
             {
@@ -78,6 +57,38 @@ namespace NeoShell.Models
                 await errorWriter.WriteLineAsync(error);
             }
             return process.ExitCode;
+        }
+
+        private async Task<TransactionExecutor> HandleTransactionsAsync(string input, ExpressChainManagerFactory? chainManagerFactory, TransactionExecutorFactory? txExecutorFactory, string output, SubCommand subCommand)
+        {
+            var invokeParams = JsonConvert.DeserializeObject<InvocationParameter>(output);
+            if (invokeParams == null)
+            {
+                throw new Exception("Invalid invocation parameters from the subcommand.");
+            }
+            if (chainManagerFactory == null || txExecutorFactory == null)
+            {
+                throw new Exception("ChainManagerFactory or TransactionExecutorFactory is not initialized.");
+            }
+
+            var (chainManager, _) = chainManagerFactory.LoadChain(input);
+            var txExec = txExecutorFactory.Create(chainManager, invokeParams.Trace, invokeParams.Json);
+            var script = new Script(Convert.FromBase64String(invokeParams.Script));
+            if (subCommand.Safe)
+            {
+                await txExec.InvokeForResultsAsync(script, invokeParams.Account ?? string.Empty, WitnessScope.CalledByEntry).ConfigureAwait(false);
+            }
+            else
+            {
+                var password = string.Empty;
+                if (!invokeParams.Account.IsWIFString())
+                {
+                    password = chainManager.Chain.ResolvePassword(invokeParams.Account, password);
+                    await txExec.ContractInvokeAsync(script, invokeParams.Account, password, WitnessScope.CalledByEntry, 0);
+                }
+            }
+
+            return txExec;
         }
 
         private Process CreateNewProcess(string[] args, string input, int index)
