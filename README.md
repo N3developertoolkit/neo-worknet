@@ -95,9 +95,9 @@ use a NuGet.config file.
 
 ## Extending NEO Shell
 
-NEO shell can be extended to run other commands. This is done by adding a `~/.neo/extensions.json` file. This file contains a list of commands that can be run from the shell. NEO shell relies on standard in/out to communicate with the extensions.
+NEO Shell allows developers to extend its functionality by adding custom commands. To do this, create a ~/.neo/extensions.json file that contains a list of commands executable from the shell. NEO Shell communicates with extensions using standard input/output.
 
-NEO shell provides two types of extensions.
+There are two types of extensions.
 
 1. NEO shell handles connections to the network. All commands are available through NEO shell. The following is an example of a `~/.neo/extensions.json` file that adds all `worknet` commands to the shell. The only requirement is that the command needs to implement an --Input parameter. This parameter is used to pass the network connection information to the command. "mapsToCommand" value can be a full path to the executable.
 
@@ -123,7 +123,7 @@ NEO shell provides two types of extensions.
 
 An example command looks like this: `neosh neo-worknet storage get 0x5423fc51fea5ac443759323bbbccdc922cd3311c 0x17F9075AE0136F96FA4EE537CE667989A88DE65A1C31373031`
 
-2. In addition to handling connections to the network, NEO shell can also invoke smart contracts on behave of the commands. This is done by adding the `invokeContract` and `safe` parameters to the extension. The `invokeContract` parameter is used to indicate that the command will invoke a smart contract. The `safe` parameter is used to indicate that the command will not change the state of the blockchain. The following is an example of a `~/.neo/extensions.json` file that adds all `nft` commands to the shell. The `nft` command has two commands that can be invoked. The `transfer` command will change the state of the blockchain. The `ownerOf` command will not change the state of the blockchain.
+2. In addition to handling connections to the network, NEO shell can also invoke smart contracts on behalf of the commands. This is done by adding the `invokeContract` and `safe` parameters to the extension. The `invokeContract` parameter is used to indicate that the command will invoke a smart contract. The `safe` parameter is used to indicate that the command will not change the state of the blockchain. The following is an example of a `~/.neo/extensions.json` file that adds all `nft` commands to the shell. The `nft` command has two commands that can be invoked. The `transfer` command will change the state of the blockchain. The `ownerOf` command will not change the state of the blockchain.
 
 ```json
 [
