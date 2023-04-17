@@ -92,3 +92,66 @@ package feed in a
 Several Neo sample projects like 
 [NeoContributorToken](https://github.com/ngdenterprise/neo-contrib-token)
 use a NuGet.config file.
+
+## Extending NEO Shell
+
+NEO shell can be extended to run other commands. This is done by adding a `~/.neo/extensions.json` file. This file contains a list of commands that can be run from the shell. NEO shell relies on standard in/out to communicate with the extensions.
+
+NEO shell provides two types of extensions.
+
+1. NEO shell handles connections to the network. All commands are available through NEO shell. The following is an example of a `~/.neo/extensions.json` file that adds all `worknet` commands to the shell. The only requirement is that the command needs to implement an --Input parameter. This parameter is used to pass the network connection information to the command. "mapsToCommand" value can be a full path to the executable.
+
+```json
+[
+    {
+        "name": "NEO Worknet",
+        "command": "worknet",
+        "mapsToCommand": "neo-worknet"
+    }
+]
+```  
+
+```json
+[
+    {
+        "name": "NEO Worknet",
+        "command": "worknet",
+        "mapsToCommand": "neo-worknet"
+    }
+]
+```
+
+An example command looks like this: `neosh neo-worknet storage get 0x5423fc51fea5ac443759323bbbccdc922cd3311c 0x17F9075AE0136F96FA4EE537CE667989A88DE65A1C31373031`
+
+2. In addition to handling connections to the network, NEO shell can also invoke smart contracts on behave of the commands. This is done by adding the `invokeContract` and `safe` parameters to the extension. The `invokeContract` parameter is used to indicate that the command will invoke a smart contract. The `safe` parameter is used to indicate that the command will not change the state of the blockchain. The following is an example of a `~/.neo/extensions.json` file that adds all `nft` commands to the shell. The `nft` command has two commands that can be invoked. The `transfer` command will change the state of the blockchain. The `ownerOf` command will not change the state of the blockchain.
+
+```json
+[
+    {
+        "name": "NEO NFT",
+        "command": "nft",
+        "mapsToCommand": "neonft", 
+        "commands": [
+            {
+                "command": "transfer",
+                "invokeContract": true,
+                "safe": false
+            },
+            {
+                "command": "ownerOf",
+                "invokeContract": true,
+                "safe": true
+            }
+        ]
+    }
+]
+```
+
+The extension commands are required to pass unsigned scripts to the NEO shell through standard out. The NEO shell will sign the scripts, execute the contract and output the result through standard out. The following is an example of a `neonft` command that will transfer an NFT from one address to another. The following snippet from the [NeoNFT] project shows how to pass the unsigned script to the NEO shell.
+
+```csharp
+...
+var script = contractHash.MakeScript("transfer", toHash, idBytes, string.Empty);
+var payload = new { Script = Convert.ToBase64String(script), Account = this.Account, Trace = this.Trace, Json = this.Json };
+Console.WriteLine(JsonConvert.SerializeObject(payload));
+```
