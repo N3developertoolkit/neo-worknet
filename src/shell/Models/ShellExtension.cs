@@ -59,7 +59,7 @@ namespace NeoShell.Models
             return process.ExitCode;
         }
 
-        private async Task<TransactionExecutor> HandleTransactionsAsync(string input, ExpressChainManagerFactory? chainManagerFactory, TransactionExecutorFactory? txExecutorFactory, string output, SubCommand subCommand)
+        private static async Task<TransactionExecutor> HandleTransactionsAsync(string input, ExpressChainManagerFactory? chainManagerFactory, TransactionExecutorFactory? txExecutorFactory, string output, SubCommand subCommand)
         {
             var invokeParams = JsonConvert.DeserializeObject<InvocationParameter>(output);
             if (invokeParams == null)
@@ -95,8 +95,6 @@ namespace NeoShell.Models
         {
             var process = new Process();
             process.StartInfo.FileName = this.MapsToCommand;
-            var arguments = new List<string>();
-
             for (int i = index + 1; i < args.Length; i++)
             {
                 process.StartInfo.ArgumentList.Add(args[i]);

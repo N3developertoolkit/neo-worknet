@@ -32,15 +32,14 @@ namespace NeoShell
             app.Conventions
                 .UseDefaultConventions()
                 .UseConstructorInjection(services);
-            ShellExtensions extensions = LoadShellExtensions(services.GetService<IFileSystem>());
+            ShellExtensions extensions = LoadShellExtensions(services.GetRequiredService<IFileSystem>());
             try
             {
-                ShellExtension? extension;
-                if (extensions.TryFindCommand(args, out extension) && extension != null)
+                if (extensions.TryFindCommand(args, out ShellExtension? extension) && extension != null)
                 {
                     var chainFactory = services.GetRequiredService<ExpressChainManagerFactory>();
                     var txExecutorFactory = services.GetRequiredService<TransactionExecutorFactory>();
-                    var input = chainFactory != null ? chainFactory.GetConnectionFilePath(string.Empty) : string.Empty;
+                    var input = chainFactory.GetConnectionFilePath(string.Empty);
                     return await extension.ExecuteAsync(args, input, Console.Out, Console.Error, chainFactory, txExecutorFactory);
                 }
                 else
@@ -68,12 +67,8 @@ namespace NeoShell
             }
         }
 
-        private static ShellExtensions LoadShellExtensions(IFileSystem? fileSystem)
+        private static ShellExtensions LoadShellExtensions(IFileSystem fileSystem)
         {
-            if (fileSystem == null)
-            {
-                return new ShellExtensions();
-            }
             string rootPath = fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".neo");
             string filePath = fileSystem.Path.Combine(rootPath, "extensions.json");
             if (!fileSystem.File.Exists(filePath))
@@ -83,38 +78,6 @@ namespace NeoShell
             string json = File.ReadAllText(filePath);
             var extensions = ShellExtensions.FromJson(json);
             return extensions;
-        }
-
-        private static int ExecuteProcess(string[] args, string cmd, string input)
-        {
-            var process = new Process();
-            process.StartInfo.FileName = cmd;
-            var arguments = new List<string>();
-            int index = Array.IndexOf(args, cmd);
-            for (int i = index + 1; i < args.Length; i++)
-            {
-                process.StartInfo.ArgumentList.Add(args[i]);
-            }
-            if (!string.IsNullOrEmpty(input))
-            {
-                process.StartInfo.ArgumentList.Add($"--input={input}");
-            }
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-            process.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
-            process.Start();
-            // Read the output and error streams
-            process.BeginOutputReadLine();
-            var error = process.StandardError.ReadToEnd();
-
-            process.WaitForExit();
-
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                Console.WriteLine(error);
-            }
-            return process.ExitCode;
         }
 
         private int OnExecute(CommandLineApplication app, IConsole console)

@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace NeoShell.Models
 {
     class ShellExtensions : List<ShellExtension>
     {
-        public bool TryFindCommand(string[] args, out ShellExtension? command)
+        public bool TryFindCommand(string[] args, [MaybeNullWhen(false)] out ShellExtension command)
         {
             foreach (string arg in args)
             {

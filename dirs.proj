@@ -3,6 +3,6 @@
   <ItemGroup>
     <ProjectReference Include="src\worknet\neoworknet.csproj" />
     <ProjectReference Include="src\shell\neoshell.csproj" />
-    <ProjectReference Include="src\nft\neonft.csproj" />
+    <ProjectReference Include="src\shell-ext\nft\neonft.csproj" />
   </ItemGroup>
 </Project>
