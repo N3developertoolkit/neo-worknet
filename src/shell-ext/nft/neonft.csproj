@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>neosh</AssemblyName>
+    <AssemblyName>neonft</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>Neo.Shell</PackageId>
+    <PackageId>Neo.Nft</PackageId>
     <PackAsTool>true</PackAsTool>
-    <RootNamespace>NeoShell</RootNamespace>
+    <RootNamespace>NeoNft</RootNamespace>
+    <PackageIcon />
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../neo-logo-72.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../neo-logo-72.png" Pack="true" Visible="false" PackagePath=""/>
   </ItemGroup>
-  
+
   <Choose>
     <When Condition=" '$(BlockchainToolkitLibraryVersion)' == 'local'">
       <ItemGroup>
@@ -25,8 +26,7 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="Neo.BlockchainToolkit.Library"
-          Version="$(BlockchainToolkitLibraryVersion)" />
+        <PackageReference Include="Neo.BlockchainToolkit.Library" Version="$(BlockchainToolkitLibraryVersion)" />
       </ItemGroup>
     </Otherwise>
   </Choose>

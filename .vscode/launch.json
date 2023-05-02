@@ -63,8 +63,30 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neo-shell.dll",
-      "args": ["contract", "run", "DevHawk.Registrar", "query", "sample.domain", "--results"],
+      "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+      "args": ["contract", "run", "NeoContributorToken", "transfer", "0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0x1727A97FFDE4DC46E687959ED82D038BF5AEF5FF384AAFBA246D23629B3FC675","data","--account node1"],
+      "cwd": "${workspaceFolder}/src",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": "nft transfer",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+      "args": ["nft", "transfer", "NeoContributorToken", "0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0x1727A97FFDE4DC46E687959ED82D038BF5AEF5FF384AAFBA246D23629B3FC675","anything","-a", "node1"],
+      "cwd": "${workspaceFolder}/src",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": "nft owner of",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+      "args": ["nft", "owner", "NeoContributorToken", "0xDA21F035A927F25105F02F71CD6D5266F19742B703CC5FEE6369E036D3E3A168", "-a", "node1"],
       "cwd": "${workspaceFolder}/src",
       "console": "internalConsole",
       "stopAtEntry": false
@@ -78,8 +100,72 @@
         "request": "launch",
         "preLaunchTask": "build",
         // If you have changed target frameworks, make sure to update the program path.
-        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neo-shell.dll",
+        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
         "args": ["show", "balance", "0x779f3fad83057b2dd0d74edbeb29e83f8c8ae5b5", "node1"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "wallet list(ext)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+        "args": ["neo-worknet","wallet", "list", "--json"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "neosh nft transfer",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+        "args": ["nft","transfer", "0x1fc6ede613b67a4bc20cefb103738c948bd0b1fe","0xf898fec9055cc080f46ed38f2a7430b9b245a5a8", "0xFD3C2163A6B3816AD243BF4E6DE6A363B285B63D4757108796B27D1DC10C6F7A","node1"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "neosh nft ownerOf",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/shell/bin/Debug/net6.0/neosh",
+        "args": ["nft","ownerOf", "0x1fc6ede613b67a4bc20cefb103738c948bd0b1fe", "0xFD3C2163A6B3816AD243BF4E6DE6A363B285B63D4757108796B27D1DC10C6F7A"],
+        "cwd": "${workspaceFolder}/src",
+        // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+        "console": "internalConsole",
+        "stopAtEntry": false
+      },
+      {
+        // Use IntelliSense to find out which attributes exist for C# debugging
+        // Use hover for the description of the existing attributes
+        // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+        "name": "nft transfer",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        // If you have changed target frameworks, make sure to update the program path.
+        "program": "${workspaceFolder}/src/nft/bin/Debug/net6.0/neonft",
+        "args": ["transfer", "0x1fc6ede613b67a4bc20cefb103738c948bd0b1fe","0xf898fec9055cc080f46ed38f2a7430b9b245a5a8","0xFD3C2163A6B3816AD243BF4E6DE6A363B285B63D4757108796B27D1DC10C6F7A","node1"],
         "cwd": "${workspaceFolder}/src",
         // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
         "console": "internalConsole",

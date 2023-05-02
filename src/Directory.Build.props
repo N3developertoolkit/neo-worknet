@@ -30,10 +30,6 @@
     <NeoMonorepoPath>..\..\..\..\official\3neo-monorepo</NeoMonorepoPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="../neo-logo-72.png" Pack="true" Visible="false" PackagePath=""/>
-  </ItemGroup>
-
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
 </Project>
