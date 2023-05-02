@@ -6,6 +6,7 @@
     <PackageId>Neo.Nft</PackageId>
     <PackAsTool>true</PackAsTool>
     <RootNamespace>NeoNft</RootNamespace>
+    <PackageIcon />
   </PropertyGroup>
 
   <ItemGroup>
