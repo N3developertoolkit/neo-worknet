@@ -13,6 +13,10 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="../../neo-logo-72.png" Pack="true" Visible="false" PackagePath=""/>
+  </ItemGroup>
+
   <Choose>
     <When Condition=" '$(BlockchainToolkitLibraryVersion)' == 'local'">
       <ItemGroup>
