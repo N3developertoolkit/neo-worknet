@@ -6,7 +6,7 @@ namespace NeoShell.Commands
 {
     partial class ExtensionCommand
     {
-        [Command("list", Description = "List all installed extensions")]
+        [Command("list", Description = "List all registered extensions")]
         internal class List
         {
             private const string BaseFolder = ".neo";

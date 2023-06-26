@@ -6,14 +6,14 @@ namespace NeoShell.Commands
 {
     partial class ExtensionCommand
     {
-        [Command("uninstall", Description = "Uninstalls an extension")]
-        internal class Uninstall
+        [Command("unregister", Description = "Unregisters an extension")]
+        internal class Unregister
         {
             private const string BaseFolder = ".neo";
             private const string ExtensionsFile = "extensions.json";
             private readonly IFileSystem fileSystem;
 
-            public Uninstall(IFileSystem fileSystem)
+            public Unregister(IFileSystem fileSystem)
             {
                 this.fileSystem = fileSystem;
             }

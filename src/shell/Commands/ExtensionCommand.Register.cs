@@ -6,14 +6,14 @@ namespace NeoShell.Commands
 {
     partial class ExtensionCommand
     {
-        [Command("install", Description = "Installs an extension")]
-        internal class Install
+        [Command("register", Description = "Registers an extension")]
+        internal class Register
         {
             private const string BaseFolder = ".neo";
             private const string ExtensionsFile = "extensions.json";
             private readonly IFileSystem fileSystem;
 
-            public Install(IFileSystem fileSystem)
+            public Register(IFileSystem fileSystem)
             {
                 this.fileSystem = fileSystem;
             }
