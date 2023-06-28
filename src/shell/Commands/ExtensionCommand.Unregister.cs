@@ -1,6 +1,6 @@
 using McMaster.Extensions.CommandLineUtils;
 using System.IO.Abstractions;
-using Newtonsoft.Json.Linq;
+using NeoShell.Models;
 
 namespace NeoShell.Commands
 {
@@ -25,20 +25,22 @@ namespace NeoShell.Commands
                 try
                 {
 
-                    JArray extensionsArray = ExtensionCommand.LoadExtensions(this.fileSystem);
+                    ShellExtensions extensions = ShellExtensions.Load(this.fileSystem);
 
-                    var extensionToRemove = extensionsArray.FirstOrDefault(extension => extension.Value<string>("name") == Name);
+                    var found = extensions.TryFindCommandByName(Name, out ShellExtension? extension);
 
-                    if (extensionToRemove == null)
+                    if (!found)
                     {
                         console.WriteLine("Extension not found.");
                         return 1;
                     }
+                    if (extension != null)
+                    {
+                        extensions.Remove(extension);
+                        extensions.Persist(this.fileSystem);
+                        console.WriteLine("Extension uninstalled successfully.");
+                    }
 
-                    extensionsArray.Remove(extensionToRemove);
-                    ExtensionCommand.WriteExtensions(this.fileSystem, extensionsArray);
-
-                    console.WriteLine("Extension uninstalled successfully.");
                     return 0;
                 }
                 catch (Exception ex)

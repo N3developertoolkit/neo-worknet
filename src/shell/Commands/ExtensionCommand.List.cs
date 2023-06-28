@@ -1,6 +1,6 @@
 using McMaster.Extensions.CommandLineUtils;
 using System.IO.Abstractions;
-using Newtonsoft.Json.Linq;
+using NeoShell.Models;
 
 namespace NeoShell.Commands
 {
@@ -20,15 +20,14 @@ namespace NeoShell.Commands
             {
                 try
                 {
-                    JArray extensionsArray = ExtensionCommand.LoadExtensions(this.fileSystem);
+                    ShellExtensions extensions = ShellExtensions.Load(this.fileSystem);
                     console.WriteLine("Installed Extensions:");
 
-                    foreach (JObject extension in extensionsArray)
+                    foreach (var extension in extensions)
                     {
-                        string? name = extension.Value<string>("name");
-                        if (name != null)
+                        if (extension.Name != null)
                         {
-                            console.WriteLine(name);
+                            console.WriteLine(extension.Name);
                         }
 
                     }
