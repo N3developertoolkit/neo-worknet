@@ -9,8 +9,6 @@ namespace NeoShell.Commands
         [Command("unregister", Description = "Unregisters an extension")]
         internal class Unregister
         {
-            private const string BaseFolder = ".neo";
-            private const string ExtensionsFile = "extensions.json";
             private readonly IFileSystem fileSystem;
 
             public Unregister(IFileSystem fileSystem)
@@ -26,11 +24,8 @@ namespace NeoShell.Commands
             {
                 try
                 {
-                    string rootPath = this.fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), BaseFolder);
 
-                    string extensionsFilePath = this.fileSystem.Path.Combine(rootPath, ExtensionsFile);
-                    string extensionsJsonContent = this.fileSystem.File.ReadAllText(extensionsFilePath);
-                    JArray extensionsArray = JArray.Parse(extensionsJsonContent);
+                    JArray extensionsArray = ExtensionCommand.LoadExtensions(this.fileSystem);
 
                     var extensionToRemove = extensionsArray.FirstOrDefault(extension => extension.Value<string>("name") == Name);
 
@@ -41,9 +36,7 @@ namespace NeoShell.Commands
                     }
 
                     extensionsArray.Remove(extensionToRemove);
-
-                    // Save the changes back to the file
-                    this.fileSystem.File.WriteAllText(extensionsFilePath, extensionsArray.ToString());
+                    ExtensionCommand.WriteExtensions(this.fileSystem, extensionsArray);
 
                     console.WriteLine("Extension uninstalled successfully.");
                     return 0;

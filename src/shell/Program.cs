@@ -12,9 +12,9 @@ namespace NeoShell
     [Command("neosh", Description = "Neo N3 blockchain shell", UsePagerForHelpText = false)]
     [Subcommand(typeof(ContractCommand))]
     [Subcommand(typeof(ConnectCommand))]
+    [Subcommand(typeof(ExtensionCommand))]
     [Subcommand(typeof(ShowCommand))]
     [Subcommand(typeof(TransferCommand))]
-    [Subcommand(typeof(ExtensionCommand))]
     class Program
     {
         public static async Task<int> Main(string[] args)

@@ -32,21 +32,21 @@ namespace NeoShell.Commands
             {
                 try
                 {
-                    string rootPath = this.fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), BaseFolder);
-                    CreateBaseFiles(rootPath);
-                    string extensionsFilePath = this.fileSystem.Path.Combine(rootPath, ExtensionsFile);
-                    string extensionsJsonContent = this.fileSystem.File.ReadAllText(extensionsFilePath);
-                    JArray extensionsArray = JArray.Parse(extensionsJsonContent);
-
+                    if(Name == string.Empty || Command == string.Empty || Path == string.Empty)
+                    {
+                        console.WriteLine("Name, Command and Path are required.");
+                        return 1;
+                    }
+                    
+                    CreateBaseFilesIfNotExist();
+                    JArray extensionsArray = ExtensionCommand.LoadExtensions(this.fileSystem);
                     JObject newExtension = new JObject();
                     newExtension["name"] = Name;
                     newExtension["command"] = Command;
                     newExtension["mapsToCommand"] = Path;
-
+                    
                     extensionsArray.Add(newExtension);
-
-                    string updatedExtensionsJson = extensionsArray.ToString();
-                    this.fileSystem.File.WriteAllText(extensionsFilePath, updatedExtensionsJson);
+                    ExtensionCommand.WriteExtensions(this.fileSystem, extensionsArray);
 
                     console.WriteLine("Extension installed successfully.");
                     return 0;
@@ -58,13 +58,14 @@ namespace NeoShell.Commands
                 }
             }
 
-            private void CreateBaseFiles(string rootPath)
+            private void CreateBaseFilesIfNotExist()
             {
+                string rootPath = ExtensionCommand.GetRootPath(this.fileSystem);
                 if (!Directory.Exists(rootPath))
                 {
                     Directory.CreateDirectory(rootPath);
                 }
-                string extensionsFilePath = this.fileSystem.Path.Combine(rootPath, ExtensionsFile);
+                string extensionsFilePath = ExtensionCommand.GetExtensionFilePath(this.fileSystem);
                 if (!this.fileSystem.File.Exists(extensionsFilePath))
                 {
                     string extensionsJson = "[]";

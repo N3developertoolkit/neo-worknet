@@ -9,8 +9,6 @@ namespace NeoShell.Commands
         [Command("list", Description = "List all registered extensions")]
         internal class List
         {
-            private const string BaseFolder = ".neo";
-            private const string ExtensionsFile = "extensions.json";
             private readonly IFileSystem fileSystem;
 
             public List(IFileSystem fileSystem)
@@ -22,10 +20,7 @@ namespace NeoShell.Commands
             {
                 try
                 {
-                    string rootPath = this.fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), BaseFolder);
-                    string extensionsFilePath = this.fileSystem.Path.Combine(rootPath, ExtensionsFile);
-                    string extensionsJsonContent = this.fileSystem.File.ReadAllText(extensionsFilePath);
-                    JArray extensionsArray = JArray.Parse(extensionsJsonContent);
+                    JArray extensionsArray = ExtensionCommand.LoadExtensions(this.fileSystem);
                     console.WriteLine("Installed Extensions:");
 
                     foreach (JObject extension in extensionsArray)
@@ -46,6 +41,8 @@ namespace NeoShell.Commands
                     return 1;
                 }
             }
+
+
         }
     }
 }
