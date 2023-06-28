@@ -9,8 +9,6 @@ namespace NeoShell.Commands
         [Command("register", Description = "Registers an extension")]
         internal class Register
         {
-            private const string BaseFolder = ".neo";
-            private const string ExtensionsFile = "extensions.json";
             private readonly IFileSystem fileSystem;
 
             public Register(IFileSystem fileSystem)

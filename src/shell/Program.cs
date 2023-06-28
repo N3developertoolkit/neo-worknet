@@ -33,7 +33,7 @@ namespace NeoShell
             app.Conventions
                 .UseDefaultConventions()
                 .UseConstructorInjection(services);
-            ShellExtensions extensions = LoadShellExtensions(services.GetRequiredService<IFileSystem>());
+            ShellExtensions extensions = ShellExtensions.Load(services.GetRequiredService<IFileSystem>());
             try
             {
                 if (extensions.TryFindCommand(args, out ShellExtension? extension) && extension != null)
@@ -66,19 +66,6 @@ namespace NeoShell
                 app.WriteException(ex);
                 return -1;
             }
-        }
-
-        private static ShellExtensions LoadShellExtensions(IFileSystem fileSystem)
-        {
-            string rootPath = fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".neo");
-            string filePath = fileSystem.Path.Combine(rootPath, "extensions.json");
-            if (!fileSystem.File.Exists(filePath))
-            {
-                return new ShellExtensions();
-            }
-            string json = File.ReadAllText(filePath);
-            var extensions = ShellExtensions.FromJson(json);
-            return extensions;
         }
 
         private int OnExecute(CommandLineApplication app, IConsole console)
