@@ -216,7 +216,7 @@ class WorkNetNode
                 using var dbftPlugin = new Neo.Consensus.DBFTPlugin(GetConsensusSettings(chain));
                 using var rpcServerPlugin = new WorknetRpcServerPlugin(GetRpcServerSettings(chain), persistencePlugin, chain.Uri);
                 using var neoSystem = new Neo.NeoSystem(protocolSettings, storeProvider.Name);
-
+                PluginHandler.LoadPlugins(Path.Combine(AppContext.BaseDirectory, "plugins"));
                 neoSystem.StartNode(new Neo.Network.P2P.ChannelsConfig
                 {
                     Tcp = new IPEndPoint(IPAddress.Loopback, chain.ConsensusNode.TcpPort),
