@@ -217,6 +217,7 @@ class WorkNetNode
                 using var rpcServerPlugin = new WorknetRpcServerPlugin(GetRpcServerSettings(chain), persistencePlugin, chain.Uri);
                 using var neoSystem = new Neo.NeoSystem(protocolSettings, storeProvider.Name);
                 PluginHandler.LoadPlugins(Path.Combine(AppContext.BaseDirectory, "plugins"));
+                PluginHandler.LoadPlugins(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".neo", "plugins"));
                 neoSystem.StartNode(new Neo.Network.P2P.ChannelsConfig
                 {
                     Tcp = new IPEndPoint(IPAddress.Loopback, chain.ConsensusNode.TcpPort),
