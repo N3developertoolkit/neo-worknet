@@ -95,11 +95,11 @@ use a NuGet.config file.
 
 ## Extending NEO Shell
 
-NEO Shell allows developers to extend its functionality by adding custom commands. To do this, create a ~/.neo/extensions.json file that contains a list of commands executable from the shell. NEO Shell communicates with extensions using standard input/output.
+NEO Shell allows developers to extend its functionality by adding custom commands. To do this, create a ~/.neo/neosh-extensions.json file that contains a list of commands executable from the shell. NEO Shell communicates with extensions using standard input/output.
 
 There are two types of extensions.
 
-1. NEO shell handles connections to the network. All commands are available through NEO shell. The following is an example of a `~/.neo/extensions.json` file that adds all `worknet` commands to the shell. The only requirement is that the command needs to implement an --Input parameter. This parameter is used to pass the network connection information to the command. "mapsToCommand" value can be a full path to the executable.
+1. NEO shell handles connections to the network. All commands are available through NEO shell. The following is an example of a `~/.neo/neosh-extensions.json` file that adds all `worknet` commands to the shell. The only requirement is that the command needs to implement an --Input parameter. This parameter is used to pass the network connection information to the command. "mapsToCommand" value can be a full path to the executable.
 
 ```json
 [
