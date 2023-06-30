@@ -36,7 +36,7 @@ namespace NeoShell.Commands
                         return 1;
                     }
 
-                    CreateBaseFilesIfNotExist();
+                    ShellExtensions.CreateBaseFilesIfNotExist(this.fileSystem);
                     ShellExtensions extensions = ShellExtensions.Load(this.fileSystem);
                     ShellExtension newExtension = new ShellExtension()
                     {
@@ -54,21 +54,6 @@ namespace NeoShell.Commands
                 {
                     app.WriteException(ex, showInnerExceptions: true);
                     return 1;
-                }
-            }
-
-            private void CreateBaseFilesIfNotExist()
-            {
-                string rootPath = ShellExtensions.GetRootPath(this.fileSystem);
-                if (!Directory.Exists(rootPath))
-                {
-                    Directory.CreateDirectory(rootPath);
-                }
-                string extensionsFilePath = ShellExtensions.GetExtensionFilePath(this.fileSystem);
-                if (!this.fileSystem.File.Exists(extensionsFilePath))
-                {
-                    string extensionsJson = "[]";
-                    this.fileSystem.File.WriteAllText(extensionsFilePath, extensionsJson);
                 }
             }
         }

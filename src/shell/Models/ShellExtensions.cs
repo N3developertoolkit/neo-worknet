@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
 using System.IO.Abstractions;
+using Newtonsoft.Json;
 
 namespace NeoShell.Models
 {
@@ -48,6 +48,7 @@ namespace NeoShell.Models
         {
             return JsonConvert.DeserializeObject<ShellExtensions>(json) ?? new ShellExtensions();
         }
+
         public static ShellExtensions Load(IFileSystem fileSystem)
         {
             string filePath = GetExtensionFilePath(fileSystem);
@@ -68,6 +69,21 @@ namespace NeoShell.Models
         public static string GetRootPath(IFileSystem fileSystem)
         {
             return fileSystem.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), BaseFolder);
+        }
+
+        public static void CreateBaseFilesIfNotExist(IFileSystem fileSystem)
+        {
+            string rootPath = GetRootPath(fileSystem);
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
+            string extensionsFilePath = GetExtensionFilePath(fileSystem);
+            if (!fileSystem.File.Exists(extensionsFilePath))
+            {
+                string extensionsJson = "[]";
+                fileSystem.File.WriteAllText(extensionsFilePath, extensionsJson);
+            }
         }
 
         public void Persist(IFileSystem fileSystem)
