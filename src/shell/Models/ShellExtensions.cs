@@ -42,8 +42,6 @@ namespace NeoShell.Models
             return false;
         }
 
-
-
         public static ShellExtensions FromJson(string json)
         {
             return JsonConvert.DeserializeObject<ShellExtensions>(json) ?? new ShellExtensions();
