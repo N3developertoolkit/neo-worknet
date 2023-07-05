@@ -1,9 +1,10 @@
 using System.Reflection;
 using Neo.Plugins;
+using McMaster.Extensions.CommandLineUtils;
 
 class PluginHandler
 {
-    public static void LoadPlugins(string directory)
+    public static void LoadPlugins(string directory, IConsole console)
     {
         if (!Directory.Exists(directory)) return;
         List<Assembly> assemblies = new();
@@ -13,6 +14,7 @@ class PluginHandler
             try
             {
                 assemblies.Add(Assembly.Load(File.ReadAllBytes(filename)));
+                console.Out.WriteLine($"Loaded plugin: {filename}");
             }
             catch { }
         }
