@@ -162,9 +162,6 @@ Console.WriteLine(JsonConvert.SerializeObject(payload));
 
 ### Extending NEO Worknet
 
-Plugins/modules can be created to extend the functionality of Neo Worknet. [Neo Modules](https://github.com/neo-project/neo-modules/tree/master) contains a set of plugins that can be used with Neo. Many of these plugins can be used with Neo Worknet as well.
+Plugins/modules can be created to extend the functionality of Neo Worknet. [Neo Modules](https://github.com/neo-project/neo-modules/tree/master) contains a set of plugins that can be used with Neo. Many of these plugins can also be used with Neo Worknet. To use them, simply drop the dlls containing the plugins into the ~/.neo/plugins folder or /plugins folder in the worknet exe folder. Neo Worknet will automatically load and execute the plugins.
 
-We have included a sample worknet plugin in the /workenet-ext folder. We will use this plugin as an example to show how to create and use a plugin for Neo Worknet.
-
-Example
-
+A sample WorkNet plugin, WorkNetLogger, has been included in the /workenet-ext folder. The WorkNetLogger plugin serves as a simple example of a plugin. After building the plugin, a DLL file named "worknet-ext-filelogger.dll" will be generated. This DLL can be copied to the ~/.neo/plugins folder. Neo Worknet will automatically load and execute the plugin. Alternatively, you can create a /plugins directory in the same folder as the neo-worknet executable and copy the DLL to the /plugins folder.
