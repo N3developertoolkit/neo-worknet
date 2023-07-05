@@ -71,7 +71,9 @@ dotnet tool update Neo.WorkNet -g --prerelease
 different directories. Full details on installing and updating .NET tools are available in the
 [official documentation](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools).
 
-## Installation (Preview)
+## Shell
+
+### Installation (Preview)
 
 The Neo Blockchain Toolkit has a public [package feed](https://dev.azure.com/ngdenterprise/Build/_artifacts).
 that contains interim builds of Neo Shell and Worknet. You can unreleased preview builds of Neo-Shell by using the 
@@ -93,7 +95,7 @@ Several Neo sample projects like
 [NeoContributorToken](https://github.com/ngdenterprise/neo-contrib-token)
 use a NuGet.config file.
 
-## Extending NEO Shell
+### Extending NEO Shell
 
 NEO Shell allows developers to extend its functionality by adding custom commands. To do this, create a ~/.neo/neosh-extensions.json file that contains a list of commands executable from the shell. NEO Shell communicates with extensions using standard input/output.
 
@@ -155,3 +157,14 @@ var script = contractHash.MakeScript("transfer", toHash, idBytes, string.Empty);
 var payload = new { Script = Convert.ToBase64String(script), Account = this.Account, Trace = this.Trace, Json = this.Json };
 Console.WriteLine(JsonConvert.SerializeObject(payload));
 ```
+
+## Worknet
+
+### Extending NEO Worknet
+
+Plugins/modules can be created to extend the functionality of Neo Worknet. [Neo Modules](https://github.com/neo-project/neo-modules/tree/master) contains a set of plugins that can be used with Neo. Many of these plugins can be used with Neo Worknet as well.
+
+We have included a sample worknet plugin in the /workenet-ext folder. We will use this plugin as an example to show how to create and use a plugin for Neo Worknet.
+
+Example
+

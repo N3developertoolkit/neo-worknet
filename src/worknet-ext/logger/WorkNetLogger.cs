@@ -54,7 +54,7 @@ public class WorkNetLogger : Plugin
 
     void OnCommitting(NeoSystem system, Block block, DataCache snapshot, IReadOnlyList<Blockchain.ApplicationExecuted> applicationExecutedList)
     {
-        Console.WriteLine("Blockchain Committing");
+        Console.WriteLine($"Blockchain Committing: {block.Hash} {block.Index} {block.Timestamp} {block.Transactions.Length} txs");
     }
 
     protected string GetContractName(UInt160 scriptHash)
