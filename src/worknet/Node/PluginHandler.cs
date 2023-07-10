@@ -13,7 +13,7 @@ static class PluginHandler
             try
             {
                 assemblies.Add(Assembly.Load(File.ReadAllBytes(filename)));
-                Log(writer, $"Loaded plugin: {filename}");
+                writer?.WriteLine($"Loaded plugin: {filename}");
             }
             catch { }
         }
@@ -38,15 +38,9 @@ static class PluginHandler
             }
             catch (Exception ex)
             {
-                Log(writer, $"Failed to load plugin: {type.FullName}");
-                Log(writer, ex.Message);
+                writer?.WriteLine($"Failed to load plugin: {type.FullName}");
+                writer?.WriteLine(ex.Message);
             }
         }
-    }
-
-    private static void Log(TextWriter? writer, string message)
-    {
-        if (writer is null) return;
-        writer.WriteLine(message);
     }
 }

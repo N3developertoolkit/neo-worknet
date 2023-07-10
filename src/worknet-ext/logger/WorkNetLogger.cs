@@ -31,7 +31,9 @@ public class WorkNetLogger : Plugin
         GC.SuppressFinalize(this);
     }
 
-    // Overwrite Config file method to find the config.json from the same directory as the plugin dll directory
+    // If Worknet plugins require custom configuration. The plugins are required to override the ConfigFile property so GetConfiguration() method can locate the config.json file. 
+    // Without this override, the default ConfigFile value is read from the PluginsDirectory property, which is relative to the assembly location. 
+    // However, WorkNet plugins are loaded from either ~/.neo/plugins folder or /plugins folder in the worknet exe directory. 
     public override string ConfigFile => System.IO.Path.Combine(AppContext.BaseDirectory, "plugins", "config.json");
 
     protected override void Configure()
