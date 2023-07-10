@@ -1,7 +1,7 @@
 using System.Reflection;
 using Neo.Plugins;
 
-class PluginHandler
+static class PluginHandler
 {
     public static void LoadPlugins(string directory, TextWriter? writer = null)
     {
