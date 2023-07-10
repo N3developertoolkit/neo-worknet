@@ -1,10 +1,9 @@
 using System.Reflection;
 using Neo.Plugins;
-using McMaster.Extensions.CommandLineUtils;
 
 class PluginHandler
 {
-    public static void LoadPlugins(string directory, IConsole console)
+    public static void LoadPlugins(string directory, TextWriter? writer = null)
     {
         if (!Directory.Exists(directory)) return;
         List<Assembly> assemblies = new();
@@ -14,18 +13,18 @@ class PluginHandler
             try
             {
                 assemblies.Add(Assembly.Load(File.ReadAllBytes(filename)));
-                console.Out.WriteLine($"Loaded plugin: {filename}");
+                Log(writer, $"Loaded plugin: {filename}");
             }
             catch { }
         }
 
         foreach (Assembly assembly in assemblies)
         {
-            LoadPlugin(assembly);
+            LoadPlugin(assembly, writer);
         }
     }
 
-    public static void LoadPlugin(Assembly assembly)
+    public static void LoadPlugin(Assembly assembly, TextWriter? writer = null)
     {
         foreach (Type type in assembly.ExportedTypes)
         {
@@ -39,8 +38,15 @@ class PluginHandler
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to load plugin: {type.FullName}", ex);
+                Log(writer, $"Failed to load plugin: {type.FullName}");
+                Log(writer, ex.Message);
             }
         }
+    }
+
+    private static void Log(TextWriter? writer, string message)
+    {
+        if (writer is null) return;
+        writer.WriteLine(message);
     }
 }

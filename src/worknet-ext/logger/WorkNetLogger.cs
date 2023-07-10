@@ -1,6 +1,5 @@
-using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Neo;
-using Neo.BlockchainToolkit.Persistence;
 using Neo.Ledger;
 using Neo.Network.P2P.Payloads;
 using Neo.Persistence;
@@ -12,6 +11,8 @@ namespace WorkNetExt;
 
 public class WorkNetLogger : Plugin
 {
+    private string _logFile = "./logger.log";
+
     NeoSystem? neoSystem;
 
     public WorkNetLogger()
@@ -30,6 +31,15 @@ public class WorkNetLogger : Plugin
         GC.SuppressFinalize(this);
     }
 
+    // Overwrite Config file method to find the config.json from the same directory as the plugin dll directory
+    public override string ConfigFile => System.IO.Path.Combine(AppContext.BaseDirectory, "plugins", "config.json");
+
+    protected override void Configure()
+    {
+        IConfigurationSection config = GetConfiguration();
+        _logFile = config.GetValue<string>("LogFile", _logFile);
+
+    }
     protected override void OnSystemLoaded(NeoSystem system)
     {
         if (neoSystem is not null) throw new Exception($"{nameof(OnSystemLoaded)} already called");
@@ -43,18 +53,17 @@ public class WorkNetLogger : Plugin
             ? string.Empty
             : $" [{args.ScriptContainer.GetType().Name}]";
 
-
-        Console.WriteLine($"{GetContractName(args.ScriptHash)} Log: \"{args.Message}\" {container}");
+        WriteToFile($"{GetContractName(args.ScriptHash)} Log: \"{args.Message}\" {container}");
     }
 
     void OnNeoUtilityLog(string source, LogLevel level, object message)
     {
-        Console.WriteLine($"{DateTimeOffset.Now:HH:mm:ss.ff} {source} {level} {message}");
+        WriteToFile($"{DateTimeOffset.Now:HH:mm:ss.ff} {source} {level} {message}");
     }
 
     void OnCommitting(NeoSystem system, Block block, DataCache snapshot, IReadOnlyList<Blockchain.ApplicationExecuted> applicationExecutedList)
     {
-        Console.WriteLine($"Blockchain Committing: {block.Hash} {block.Index} {block.Timestamp} {block.Transactions.Length} txs");
+        WriteToFile($"Blockchain Committing: {block.Hash} {block.Index} {block.Timestamp} {block.Transactions.Length} txs");
     }
 
     protected string GetContractName(UInt160 scriptHash)
@@ -69,5 +78,13 @@ public class WorkNetLogger : Plugin
         }
 
         return scriptHash.ToString();
+    }
+
+    private void WriteToFile(string logMessage)
+    {
+        using(StreamWriter writer = new StreamWriter(_logFile, true))
+        {
+            writer.WriteLine(logMessage);
+        }
     }
 }
