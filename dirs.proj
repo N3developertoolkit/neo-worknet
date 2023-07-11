@@ -4,5 +4,6 @@
     <ProjectReference Include="src\worknet\neoworknet.csproj" />
     <ProjectReference Include="src\shell\neoshell.csproj" />
     <ProjectReference Include="src\shell-ext\nft\neonft.csproj" />
+    <ProjectReference Include="src\worknet-ext\logger\filelogger.csproj" />
   </ItemGroup>
 </Project>

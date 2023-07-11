@@ -71,7 +71,9 @@ dotnet tool update Neo.WorkNet -g --prerelease
 different directories. Full details on installing and updating .NET tools are available in the
 [official documentation](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools).
 
-## Installation (Preview)
+## Shell
+
+### Installation (Preview)
 
 The Neo Blockchain Toolkit has a public [package feed](https://dev.azure.com/ngdenterprise/Build/_artifacts).
 that contains interim builds of Neo Shell and Worknet. You can unreleased preview builds of Neo-Shell by using the 
@@ -93,7 +95,7 @@ Several Neo sample projects like
 [NeoContributorToken](https://github.com/ngdenterprise/neo-contrib-token)
 use a NuGet.config file.
 
-## Extending NEO Shell
+### Extending NEO Shell
 
 NEO Shell allows developers to extend its functionality by adding custom commands. To do this, create a ~/.neo/neosh-extensions.json file that contains a list of commands executable from the shell. NEO Shell communicates with extensions using standard input/output.
 
@@ -155,3 +157,15 @@ var script = contractHash.MakeScript("transfer", toHash, idBytes, string.Empty);
 var payload = new { Script = Convert.ToBase64String(script), Account = this.Account, Trace = this.Trace, Json = this.Json };
 Console.WriteLine(JsonConvert.SerializeObject(payload));
 ```
+
+## Worknet
+
+### Extending NEO Worknet
+
+Neo Worknet's capabilities can be extended through the use of plugins or modules. The [Neo Modules](https://github.com/neo-project/neo-modules/tree/master) package offers a variety of plugins compatible with both Neo and Neo Worknet. To utilize these plugins, simply copy the DLL files containing the plugins into either the ~/.neo/plugins directory or the /plugins directory located within the worknet executable folder. Upon initiation, Neo Worknet will automatically load and activate these plugins.
+
+As an illustrative example, we've included a sample Worknet plugin, WorkNetLogger, in the /workenet-ext directory. This plugin is designed to direct Worknet's logs to a specified file. It operates by reading the designated log file path from a custom config.json file, and then recording the logs into this file.
+
+If your Worknet plugin requires custom configuration, it's essential to ensure that the plugin class overrides the ConfigFile property. This enables the GetConfiguration() method to locate the config.json file. Without the override, the default ConfigFile value will be sourced from the PluginsDirectory property, which is relative to the assembly location.
+
+After building the plugin, copy both the "worknet-ext-filelogger.dll" and config.json files to the ~/.neo/plugins directory. Upon startup, Worknet will automatically identify, load and execute the plugin. If preferred, you may also create a /plugins directory within the same directory as the neo-worknet executable, and relocate the DLL to this /plugins directory.

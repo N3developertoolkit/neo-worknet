@@ -1,0 +1,6 @@
+{
+    "PluginConfiguration": {
+      "LogFile": "./samplePlugLogger.log"
+
+    }
+  }

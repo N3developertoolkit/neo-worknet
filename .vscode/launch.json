@@ -15,6 +15,17 @@
       "stopAtEntry": false
     },
     {
+      "name": "worknet run",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/worknet/bin/Debug/net6.0/neo-worknet",
+      "args": ["run"],
+      "cwd": "${workspaceFolder}/src/worknet",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
       "name": "list storage",
       "type": "coreclr",
       "request": "launch",

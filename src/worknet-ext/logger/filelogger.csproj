@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>worknet-ext-filelogger</AssemblyName>
+    <OutputType>library</OutputType>
+    <PackageId>WorkNetExt.FileLogger</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <RootNamespace>WorkNetExt</RootNamespace>
+    <PackageIcon />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../neo-logo-72.png" Pack="true" Visible="false" PackagePath=""/>
+  </ItemGroup>
+
+ <Choose>
+    <When Condition=" '$(BlockchainToolkitLibraryVersion)' == 'local'">
+      <ItemGroup>
+        <ProjectReference Include="$(BlockchainToolkitLibraryLocalPath)\src\bctklib\bctklib.csproj" />
+        <ProjectReference Include="$(NeoMonorepoPath)\modules\src\DBFTPlugin\DBFTPlugin.csproj" />
+        <ProjectReference Include="$(NeoMonorepoPath)\modules\src\RpcServer\RpcServer.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Neo.BlockchainToolkit.Library"
+          Version="$(BlockchainToolkitLibraryVersion)" />
+        <PackageReference Include="Neo.Consensus.DBFT" Version="$(NeoVersion)" />
+        <PackageReference Include="Neo.Plugins.RpcServer" Version="$(NeoVersion)" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
+</Project>
