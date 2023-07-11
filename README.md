@@ -166,4 +166,6 @@ Neo Worknet's capabilities can be extended through the use of plugins or modules
 
 As an illustrative example, we've included a sample Worknet plugin, WorkNetLogger, in the /workenet-ext directory. This plugin is designed to direct Worknet's logs to a specified file. It operates by reading the designated log file path from a custom config.json file, and then recording the logs into this file.
 
+If your Worknet plugin requires custom configuration, it's essential to ensure that the plugin class overrides the ConfigFile property. This enables the GetConfiguration() method to locate the config.json file. Without the override, the default ConfigFile value will be sourced from the PluginsDirectory property, which is relative to the assembly location.
+
 After building the plugin, copy both the "worknet-ext-filelogger.dll" and config.json files to the ~/.neo/plugins directory. Upon startup, Worknet will automatically identify, load and execute the plugin. If preferred, you may also create a /plugins directory within the same directory as the neo-worknet executable, and relocate the DLL to this /plugins directory.
